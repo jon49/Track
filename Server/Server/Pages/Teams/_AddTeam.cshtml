@@ -1,0 +1,36 @@
+﻿@model ITeam
+
+@{ 
+    var postTo =
+        Model is Team x   ? URL.Edit(x.TeamId, x.UserId)
+      : Model is TeamPost ? URL.NEW
+      : throw new ArgumentException($"Unknown `{nameof(ITeam)}` type `{Model.GetType().Name}`.");
+}
+
+<form
+    method="post"
+    ic-post-to="@postTo">
+    <div>
+        <label>Team</label>
+        <input type="text" asp-for="TeamName" autofocus />
+    </div>
+    <fieldset>
+        <legend>Coach</legend>
+        <div>
+            <div>
+                <label>First Name</label>
+                <input type="text" asp-for="FirstName" />
+            </div>
+            <div>
+                <label>Last Name</label>
+                <input type="text" asp-for="LastName" />
+            </div>
+        </div>
+        <div>
+            <label>Email</label>
+            <input type="email" asp-for="Email" />
+        </div>
+    </fieldset>
+    <button type="submit">Submit</button>
+    <button ic-get-from="/teams/cancel" ic-target="#edit">Cancel</button>
+</form>

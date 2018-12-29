@@ -1,0 +1,40 @@
+﻿@using  Server.Pages
+
+@{ 
+    var url = Context.Request.Path;
+    var selectedClass = "selected disabled";
+    var teamsClass = "";
+    var eventsClass = "";
+    if (url.HasValue)
+    {
+        teamsClass = url.Value.Contains("/teams") ? selectedClass : "";
+        eventsClass = url.Value.Contains("/events") ? selectedClass : "";
+    }
+}
+
+<header>
+    <h1>Track</h1>
+    <nav>
+        <section>
+            <ul>
+                <li>
+                    <a
+                       ic-target="main"
+                       ic-get-from="@Teams.URL.VIEW"
+                       ic-action-target="this"
+                       ic-action="toggleClass:selected"
+                       class="@teamsClass"
+                       >Teams</a>
+                </li>
+                <li>
+                    <a
+                       ic-target="main"
+                       ic-get-from="@Events.URL.VIEW"
+                       ic-action-target="this"
+                       ic-action="toggleClass:selected"
+                       class="@eventsClass">Events</a>
+                </li>
+            </ul>
+        </section>
+    </nav>
+</header>

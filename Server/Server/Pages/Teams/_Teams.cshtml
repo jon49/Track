@@ -1,0 +1,20 @@
+﻿@model List<Team>
+
+<table>
+    <thead>
+        <tr>
+            <th>Team Name</th>
+            <th>Coach Name</th>
+            <th>Coach Email</th>
+        </tr>
+    </thead>
+<tbody id="teams" ic-append-from="@URL.NEW">
+    @foreach(var team in Model)
+    {
+        <partial name="_TeamRow" model="team" />
+    }
+</tbody>
+</table>
+<div id="edit" class="flex column center">
+    <partial name="_AddTeamButton" />
+</div> 

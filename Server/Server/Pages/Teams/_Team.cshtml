@@ -1,0 +1,6 @@
+﻿@model Team
+
+<td id="team-name-@Model.TeamId">@Model.TeamName</td>
+<td id="name-@Model.UserId">@Model.FirstName @Model.LastName</td>
+<td id="email-@Model.UserId">@Model.Email</td>
+<td><a ic-target="#edit" ic-get-from="@URL.EditForm(Model.TeamId, Model.UserId)" title="Edit">&laquo;</a></td>
