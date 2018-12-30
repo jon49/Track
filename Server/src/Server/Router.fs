@@ -6,10 +6,7 @@ open Giraffe.ResponseWriters
 
 
 let browser = pipeline {
-    plug acceptHtml
-    //plug (mustAccept ["text/html-partial"])
-    //plug acceptMultipart
-    //plug acceptXml
+    plug (mustAccept ["text/html"; "text/html-partial"])
     plug putSecureBrowserHeaders
     plug fetchSession
     set_header "x-pipeline-type" "Browser"
@@ -27,12 +24,7 @@ let browserRouter = router {
 
     forward "" defaultView //Use the default view
     forward "/teams" Teams.Controller.teamsController
-    //forward "/books" Books.Controller.resource
 }
-
-//let partialViewPipeline = pipeline {
-//    plug (mustAccept ["text/html-partial"])
-//}
 
 //let partialView = router {
 //    pipe_through partialViewPipeline
