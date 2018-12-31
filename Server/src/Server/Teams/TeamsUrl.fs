@@ -21,4 +21,4 @@ module Url =
         let addTeamForm = "/teams/add"
 
     module Post =
-        let ``new`` = "/teams";
+        let ``new`` = "/teams/create";
