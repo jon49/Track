@@ -24,12 +24,15 @@ module Controller =
     let addTeamForm (ctx : HttpContext) =
         task { return View.addEditTeamForm None }
 
-    let createTeam (ctx : HttpContext) =
+    let createTeam : HttpHandler = fun _ (ctx : HttpContext) ->
         task {
             let! data = Controller.getForm<Model.Base> ctx
-            match! Database.add data with
-            | Ok _ -> return View.addTeamButton
-            | Error error -> return InternalError.layout error
+            let! result = Database.add data
+            let xml =
+                match result with
+                | Ok _ -> View.addTeamButton
+                | Error error -> InternalError.layout error
+            return! Controller.renderHtml ctx xml
         }
 
     let editTeam teamId (ctx : HttpContext) userId =
@@ -82,12 +85,12 @@ module Controller =
 
     let teamsCustomEndpoints = router {
         get "/add-button" (htmlView View.addTeamButton)
-        get "/latest" getLatestAddedTeam
+        get "/create" getLatestAddedTeam
+        post "/create" createTeam
     }
 
     let teamsController = controller {
         subController "/users" usersController
         index indexAction
         add addTeamForm 
-        create createTeam
     }
