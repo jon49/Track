@@ -15,37 +15,39 @@ module View =
                 rawText "&laquo;" ] ] ]
 
     let teamRow (x : Team) =
-        tr [ _icSrc (Url.Put.make x.TeamId x.UserId) ] (team x)
+        tr [ _icSrc (Url.Put.team x.TeamId x.UserId) ] (team x)
 
-    let addTeamForm (maybeTeam : Team option) =
-        let (postTo, firstName, lastName, email, teamName) =
+    let addEditTeamForm (maybeTeam : Team option) =
+        let team =
             match maybeTeam with
-            | Some x ->
-                let d = x.Data
-                (Url.Put.make x.TeamId x.UserId, d.FirstName, d.LastName, d.Email, d.TeamName)
-            | None ->
-                (Url.Post.``new``, "", "", "", "")
+            | Some x -> x.Data
+            | None -> { FirstName = ""
+                        LastName = ""
+                        Email = ""
+                        TeamName = "" }
+        let postTo =
+            match maybeTeam with
+            | Some x -> Url.Put.team x.TeamId x.UserId
+            | None -> Url.Post.``new``
         form [ _method "post"; _icPostTo postTo ] [
             fieldset [] [
-                fieldset [] [
-                    label [] [ rawText "Team" ]
-                    input [ _type "text"; _value teamName; _autofocus ] ]
+                fieldset [] (field "text" [ _autofocus ] <@ team.TeamName @>)
                 fieldset [] [
                     legend [] [ rawText "Coach" ]
                     label [] [ rawText "First Name" ]
-                    input [ _type "text"; _value firstName ]
+                    input [ _type "text"; _value team.FirstName; _name "FirstName" ]
                     label [] [ rawText "Last Name" ]
-                    input [ _type "text"; _value lastName ]
+                    input [ _type "text"; _value team.LastName; _name "LastName" ]
                     br []
                     label [] [ rawText "Email" ]
-                    input [ _type "email"; _value email ] ]
+                    input [ _type "email"; _value team.Email; _name "Email" ] ]
                 button [ _type "submit" ] [ rawText "Submit" ]
-                button [ _icGetFrom "/teams/cancel"; _icTarget "#edit" ] [ rawText "Cancel" ]
+                button [ _icGetFrom Url.Partial.addTeamButton; _icTarget "#edit" ] [ rawText "Cancel" ]
             ]
         ]
 
     let addTeamButton =
-        button [ _icGetFrom Url.Partial.addTeamButton; _icTarget "#edit" ] [ rawText "Add Team" ]
+        button [ _icGetFrom Url.Partial.addTeamForm; _icTarget "#edit"; _autofocus ] [ rawText "Add Team" ]
 
     let all (teams : Team list) = [
         table [] [
