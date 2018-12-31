@@ -1,10 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
 nuget FSharp.Core
-nuget Saturn
-nuget Simple.Migrations
-nuget Microsoft.Data.Sqlite
-nuget Dapper
+nuget Saturn >= 0.8.0
 
 clitool dotnet-saturn
 
