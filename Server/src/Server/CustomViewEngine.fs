@@ -15,6 +15,7 @@ module ViewEngine =
     let _icGetFrom = attr "ic-get-from"
     let _icAppendFrom = attr "ic-append-from"
     let _icSrc = attr "ic-src"
+    let _icDeps = attr "ic-deps"
 
     let field ``type`` attrs (field : Expr<'a>) =
         let propertyName =
