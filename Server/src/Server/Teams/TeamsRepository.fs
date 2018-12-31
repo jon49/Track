@@ -33,12 +33,30 @@ module Database =
         Task.FromResult <| Ok teams
 
     let add (team : Base) =
-        let newId = teams.Length
+        let newId = teams.Length + 1
         teams <- { Data = team; TeamId = newId; UserId = newId }::teams
         Ok ()
+        |> Task.FromResult
+
+    let find (teamId : int) (userId : int) =
+        teams
+        |> List.tryFind (fun x -> x.TeamId = teamId && x.UserId = userId)
+        |> Ok
+        |> Task.FromResult
 
     let getLastest () =
         match teams with
         | team::xs -> Ok team
         | _ -> Error "Could not get latest team."
+        |> Task.FromResult
+
+    let update (team : Team) =
+        teams <- teams
+        |> List.map (fun x -> 
+            if x.TeamId = team.TeamId && x.UserId = team.UserId
+                then team
+            else x )
+        Ok ()
+        |> Task.FromResult
+        
 
