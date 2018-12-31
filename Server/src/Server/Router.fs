@@ -3,6 +3,7 @@ module Router
 open Saturn
 open Giraffe.Core
 open Giraffe.ResponseWriters
+open Teams.Model
 
 
 let browser = pipeline {
@@ -24,6 +25,7 @@ let browserRouter = router {
 
     forward "" defaultView //Use the default view
     forward "/teams" Teams.Controller.teamsController
+    forward "/teams" Teams.Controller.teamsCustomEndpoints
 }
 
 //let partialView = router {
