@@ -30,3 +30,7 @@ module ViewEngine =
         [ label [ _for id ] [ rawText displayName ]
           input ([ _type ``type``; _value value; _name propertyName; _id id ] @ attrs) ]
 
+    module Header =
+
+        let ``IC-Trigger`` url = "X-IC-Trigger", url
+
