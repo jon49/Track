@@ -15,7 +15,7 @@ module View =
                 rawText "&laquo;" ] ] ]
 
     let teamRow (x : Team) =
-        tr [ _icSrc (Url.Put.team x.TeamId x.UserId) ] (team x)
+        tr [ _icSrc (Url.Put.team x.TeamId x.UserId); _icDeps "ignore" ] (team x)
 
     let addEditTeamForm (maybeTeam : Team option) =
         let team =
@@ -56,6 +56,6 @@ module View =
                     th [] [ rawText "Team Name" ]
                     th [] [ rawText "Coach Name" ]
                     th [] [ rawText "Coach Email" ] ] ]
-            tbody [ _id "teams"; _icAppendFrom Url.Post.``new`` ] (teams |> List.map teamRow) ]
+            tbody [ _id "teams"; _icAppendFrom Url.Get.latest ] (teams |> List.map teamRow) ]
         div [ _id "edit" ] [ addTeamButton ] ]
 

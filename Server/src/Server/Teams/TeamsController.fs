@@ -8,6 +8,7 @@ module Controller =
     open Giraffe
     open FSharp.Control.Tasks
     open Model
+    open Track.ViewEngine
     open Giraffe
     open Saturn.ControllerHelpers
     open Saturn.ControllerHelpers
@@ -24,15 +25,12 @@ module Controller =
     let addTeamForm (ctx : HttpContext) =
         task { return View.addEditTeamForm None }
 
-    let createTeam : HttpHandler = fun _ (ctx : HttpContext) ->
+    let createTeam (ctx : HttpContext) =
         task {
             let! data = Controller.getForm<Model.Base> ctx
-            let! result = Database.add data
-            let xml =
-                match result with
-                | Ok _ -> View.addTeamButton
-                | Error error -> InternalError.layout error
-            return! Controller.renderHtml ctx xml
+            match! Database.add data with
+            | Ok _ -> return View.addTeamButton
+            | Error error -> return InternalError.layout error
         }
 
     let editTeam teamId (ctx : HttpContext) userId =
@@ -52,7 +50,9 @@ module Controller =
                 Data = teamData
             }
             match! Database.update team with
-            | Ok x -> return View.addTeamButton
+            | Ok x ->
+                ctx.SetHttpHeader <|| Header.``IC-Trigger`` (Url.Put.team teamId userId)
+                return View.addTeamButton
             | Error error -> return InternalError.layout error
         }
 
@@ -85,12 +85,13 @@ module Controller =
 
     let teamsCustomEndpoints = router {
         get "/add-button" (htmlView View.addTeamButton)
-        get "/create" getLatestAddedTeam
-        post "/create" createTeam
+        get "/latest" getLatestAddedTeam
+        //post "/create" createTeam
     }
 
     let teamsController = controller {
         subController "/users" usersController
         index indexAction
         add addTeamForm 
+        create createTeam
     }
