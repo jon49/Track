@@ -5,6 +5,10 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Settings.fs" />
     <None Include="test.fsx" />
     <Compile Include="Reflection.fs" />
     <Compile Include="CustomViewEngine.fs" />
@@ -15,11 +19,11 @@
     <Compile Include="Templates\Index.fs" />
     <Compile Include="Templates\NotFound.fs" />
     <Compile Include="Templates\InternalError.fs" />
-    <Compile Include="Teams\TeamsModel.fs" />
-    <Compile Include="Teams\TeamsUrl.fs" />
-    <Compile Include="Teams\TeamsViews.fs" />
-    <Compile Include="Teams\TeamsRepository.fs" />
-    <Compile Include="Teams\TeamsController.fs" />
+    <Compile Include="Features\Teams\TeamsModel.fs" />
+    <Compile Include="Features\Teams\TeamsUrl.fs" />
+    <Compile Include="Features\Teams\TeamsViews.fs" />
+    <Compile Include="Features\Teams\TeamsRepository.fs" />
+    <Compile Include="Features\Teams\TeamsController.fs" />
 
     <Compile Include="Books\BooksModel.fs" />
     <Compile Include="Books\BooksViews.fs" />

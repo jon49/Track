@@ -5,18 +5,18 @@ open FSharp.Control.Tasks.ContextInsensitive
 open Config
 open Saturn
 
-module Controller =
+//module Controller =
 
-  let indexAction (ctx : HttpContext) =
-    task {
-      let cnf = Controller.getConfig ctx
-      let! result = Database.getAll cnf.connectionString
-      match result with
-      | Ok result ->
-        return Views.index ctx (List.ofSeq result)
-      | Error ex ->
-        return raise ex
-    }
+//  let indexAction (ctx : HttpContext) =
+//    task {
+//      let cnf = Controller.getConfig ctx
+//      let! result = Database.getAll cnf.connectionString
+//      match result with
+//      | Ok result ->
+//        return Views.index ctx (List.ofSeq result)
+//      | Error ex ->
+//        return raise ex
+//    }
 
 //  let showAction (ctx: HttpContext) (id : string) =
 //    task {
@@ -31,10 +31,10 @@ module Controller =
 //        return raise ex
 //    }
 
-  let addAction (ctx: HttpContext) =
-    task {
-      return Views.add ctx None Map.empty
-    }
+  //let addAction (ctx: HttpContext) =
+  //  task {
+  //    return Views.add ctx None Map.empty
+  //  }
 
 //  let editAction (ctx: HttpContext) (id : string) =
 //    task {

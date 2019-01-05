@@ -10,10 +10,17 @@ let layout (content: XmlNode list) =
             title [] [ encodedText "Track" ]
         ]
         body [] [
-            yield h1 [] [ rawText "Track &amp; Field" ]
+            yield header [] [
+                h1 [] [ rawText "Track &amp; Field" ]
+                nav [] [
+                    ul [] [
+                        li [ _id "btn-login" ] [ rawText "Login" ]
+                    ] ]
+                ]
             yield! content
             yield script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []
             yield script [ _src "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js" ] []
+            yield script [ _src "https://cdn.auth0.com/js/auth0/9.5.1/auth0.min.js" ] []
             yield script [ _src "/app.js" ] []
         ]
     ]

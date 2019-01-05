@@ -32,12 +32,13 @@ module View =
         form [ _method "post"; _icPostTo postTo ] [
             fieldset [] [
                 fieldset [] (field "text" [ _autofocus ] <@ team.TeamName @>)
-                fieldset [] (
-                    [ legend [] [ rawText "Coach" ] ]
-                    @ (field "text" [] <@ team.FirstName @>)
-                    @ (field "text" [] <@ team.LastName @>)
-                    @ [ br [] ]
-                    @ (field "email" [] <@ team.Email @>))
+                fieldset [] [
+                    yield  legend [] [ rawText "Coach" ]
+                    yield! field "text" [] <@ team.FirstName @>
+                    yield  br []
+                    yield! field "text" [] <@ team.LastName @>
+                    yield  br []
+                    yield! field "email" [] <@ team.Email @> ]
                 button [ _type "submit" ] [ rawText "Submit" ]
                 button [ _icGetFrom Url.Partial.addTeamButton; _icTarget "#edit" ] [ rawText "Cancel" ]
             ]

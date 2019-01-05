@@ -3,8 +3,6 @@ module Router
 open Saturn
 open Giraffe.Core
 open Giraffe.ResponseWriters
-open Teams.Model
-
 
 let browser = pipeline {
     plug (mustAccept ["text/html"; "text/html-partial"])
@@ -28,9 +26,10 @@ let browserRouter = router {
     forward "/teams" Teams.Controller.teamsCustomEndpoints
 }
 
-//let partialView = router {
-//    pipe_through partialViewPipeline
+//let app = router {
+//    //pipe_through (Auth.requireAuthentication ChallengeType.JWT)
 //    forward "/teams" Teams.Controller.teamsController
+//    forward "/teams" Teams.Controller.teamsCustomEndpoints
 //}
 
 //Other scopes may use different pipelines and error handlers
