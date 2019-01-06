@@ -1,5 +1,6 @@
 FSharp.Data
 FSharp.Core
 Saturn
+Microsoft.AspNetCore.Authentication.OpenIdConnect
 
 dotnet-saturn

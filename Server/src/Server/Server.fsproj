@@ -13,7 +13,7 @@
     <Compile Include="Reflection.fs" />
     <Compile Include="CustomViewEngine.fs" />
     <Compile Include="Database.fs" />
-    <Compile Include="Config.fs" />
+    <Compile Include="Authentication.fs" />
 
     <Compile Include="Templates\App.fs" />
     <Compile Include="Templates\Index.fs" />

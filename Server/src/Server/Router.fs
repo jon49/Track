@@ -3,6 +3,16 @@ module Router
 open Saturn
 open Giraffe.Core
 open Giraffe.ResponseWriters
+open Track.Settings
+open System.Security.Claims
+open System.IdentityModel.Tokens.Jwt
+open System
+open Saturn
+open Microsoft.IdentityModel.Tokens
+open Microsoft.AspNetCore.Http
+open Giraffe.Core
+open Giraffe
+open FSharp.Control.Tasks
 
 let browser = pipeline {
     plug (mustAccept ["text/html"; "text/html-partial"])

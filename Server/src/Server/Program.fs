@@ -1,7 +1,7 @@
 module Server
 
 open Saturn
-open Config
+open Track.Authentication
 
 let endpointPipe = pipeline {
     plug head
@@ -12,12 +12,12 @@ let app = application {
     pipe_through endpointPipe
 
     error_handler (fun ex _ -> pipeline { render_html (InternalError.layout ex) })
+    use_open_id_auth_with_config openIdConfig
     use_router Router.appRouter
-    url "http://0.0.0.0:8085/"
+    url "http://0.0.0.0:8086/"
     memory_cache
     use_static "static"
     use_gzip
-    //use_config (fun _ -> {connectionString = "DataSource=database.sqlite"} ) //TODO: Set development time configuration
 }
 
 [<EntryPoint>]
