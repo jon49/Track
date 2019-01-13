@@ -19,16 +19,12 @@
     <Compile Include="Templates\Index.fs" />
     <Compile Include="Templates\NotFound.fs" />
     <Compile Include="Templates\InternalError.fs" />
+    <Compile Include="Features\Accounts\AccountsController.fs" />
     <Compile Include="Features\Teams\TeamsModel.fs" />
     <Compile Include="Features\Teams\TeamsUrl.fs" />
     <Compile Include="Features\Teams\TeamsViews.fs" />
     <Compile Include="Features\Teams\TeamsRepository.fs" />
     <Compile Include="Features\Teams\TeamsController.fs" />
-
-    <Compile Include="Books\BooksModel.fs" />
-    <Compile Include="Books\BooksViews.fs" />
-    <Compile Include="Books\BooksRepository.fs" />
-    <Compile Include="Books\BooksController.fs" />
     <Compile Include="Router.fs" />
     <Compile Include="Program.fs" />
 

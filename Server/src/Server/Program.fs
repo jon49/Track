@@ -2,6 +2,7 @@ module Server
 
 open Saturn
 open Track.Authentication
+open Track.Settings
 
 let endpointPipe = pipeline {
     plug head
@@ -13,8 +14,8 @@ let app = application {
 
     error_handler (fun ex _ -> pipeline { render_html (InternalError.layout ex) })
     use_open_id_auth_with_config openIdConfig
-    use_router Router.appRouter
-    url "http://0.0.0.0:8086/"
+    use_router Router.allRouters
+    url Setting.BaseUrl
     memory_cache
     use_static "static"
     use_gzip

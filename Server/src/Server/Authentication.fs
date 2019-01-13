@@ -9,7 +9,6 @@ module Authentication =
     open Microsoft.Extensions.DependencyInjection
     open Microsoft.AspNetCore.Authentication.Cookies
     open Microsoft.AspNetCore.Authentication.OpenIdConnect
-    open FSharp.Control.Tasks
     open System.Threading.Tasks
     open System
 
@@ -26,11 +25,12 @@ module Authentication =
 
           let service (s : IServiceCollection) =
             let c = s.AddAuthentication(fun cfg ->
-              cfg.DefaultScheme <- CookieAuthenticationDefaults.AuthenticationScheme
-              cfg.DefaultChallengeScheme <- OpenIdConnectDefaults.AuthenticationScheme
-              cfg.DefaultSignInScheme <- CookieAuthenticationDefaults.AuthenticationScheme)
+              cfg.DefaultAuthenticateScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+              cfg.DefaultSignInScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+              cfg.DefaultChallengeScheme <- CookieAuthenticationDefaults.AuthenticationScheme
+              )
             addCookie state c
-            c.AddOpenIdConnect("OpenIdConnect",config) |> ignore
+            c.AddOpenIdConnect ("Auth0", config) |> ignore
             s
 
           { state with
@@ -42,18 +42,7 @@ module Authentication =
         let events =  new OpenIdConnectEvents()
         events.OnRedirectToIdentityProviderForSignOut <- fun context ->
             let logoutUri =
-                let logoutUri = sprintf "https://%s/v2/logout?client_id=%s" Setting.Auth.Issuer Setting.Auth.ClientId
-
-                match context.Properties.RedirectUri with
-                | x when System.String.IsNullOrEmpty x -> logoutUri
-                | x ->
-                    let postLogoutUri =
-                        if x.StartsWith("/")
-                            then
-                                let request = context.Request
-                                request.Scheme + "://" + request.Host.ToString() + request.PathBase + x
-                        else x
-                    logoutUri + (sprintf "&returnTo=%s" <| Uri.EscapeDataString(postLogoutUri))
+                sprintf "https://%s/v2/logout?client_id=%s" Setting.Auth.Issuer Setting.Auth.ClientId
 
             context.Response.Redirect(logoutUri)
             context.HandleResponse()

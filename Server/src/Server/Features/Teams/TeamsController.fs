@@ -1,6 +1,5 @@
 ﻿namespace Teams
 
-
 module Controller =
 
     open Microsoft.AspNetCore.Http
@@ -9,15 +8,16 @@ module Controller =
     open FSharp.Control.Tasks
     open Model
     open Track.ViewEngine
-    open Giraffe
-    open Saturn.ControllerHelpers
-    open Saturn.ControllerHelpers
+    open Track.Authentication
 
     let indexAction (ctx : HttpContext) =
+        let layoutOptions = {
+            App.IsAuthenticated = true
+        }
         task {
             match! Database.all () with
             | Ok result ->
-                return App.layout <| View.all result
+                return App.layout layoutOptions <| View.all result
             | Error error ->
                 return InternalError.layout (error)
         }
