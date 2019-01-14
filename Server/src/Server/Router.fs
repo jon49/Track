@@ -25,9 +25,9 @@ let browser = pipeline {
 let insecureRoutes = router {
     forward "" Index.indexRouter
     forward "" Accounts.Controller.accounts
-    not_found_handler (htmlView NotFound.layout) //Use the default 404 webpage
     get "/index.html" (redirectTo false "/")
     get "/default.html" (redirectTo false "/")
+    not_found_handler (htmlView NotFound.layout) //Use the default 404 webpage
 }
 
 let authenticated = pipeline {
@@ -43,6 +43,6 @@ let securedRoutes = router {
 }
 
 let allRouters = router {
-    forward "" insecureRoutes
     forward "" securedRoutes
+    forward "" insecureRoutes
 }
