@@ -32,7 +32,7 @@ module Database =
     let all () =
         Task.FromResult <| Ok teams
 
-    let add (team : Base) =
+    let add (team : Data) =
         let newId = teams.Length + 1
         teams <- { Data = team; TeamId = newId; UserId = newId }::teams
         Ok ()

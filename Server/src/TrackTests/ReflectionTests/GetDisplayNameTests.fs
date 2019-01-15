@@ -5,7 +5,7 @@ module GetDisplayNameTests =
     open Expecto
     open TrackTests
     open ViewModel
-    open Track.Reflection
+    open Utils.Reflection
 
     [<Tests>]
     let tests =

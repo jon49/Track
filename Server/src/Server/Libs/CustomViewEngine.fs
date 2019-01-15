@@ -18,24 +18,8 @@ module ViewEngine =
     let _icSrc = attr "ic-src"
     let _icDeps = attr "ic-deps"
 
-    // jQuery Validation Attributes
-    let _formNoValidate = flag "formnovalidate"
-
     // Custom
     let _empty = flag ""
-
-    let field ``type`` attrs (field : Expr<'a>) =
-        let propertyName =
-            getPropertyName field
-            |> Option.defaultValue ""
-        let value =
-            getPropertyValue field
-            |> Option.defaultValue ""
-        let displayName = getDisplayName field
-        let id = propertyName
-
-        [ label [ _for id ] [ rawText displayName ]
-          input ([ _type ``type``; _value value; _name propertyName; _id id ] @ attrs) ]
 
     module Header =
 

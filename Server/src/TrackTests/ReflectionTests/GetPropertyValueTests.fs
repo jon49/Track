@@ -4,7 +4,7 @@ module GetPropertyValueTests =
 
     open Expecto
     open TrackTests.ViewModel
-    open Track.Reflection
+    open Utils.Reflection
 
     [<Tests>]
     let tests =

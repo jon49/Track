@@ -5,13 +5,16 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Settings.json">
+    <None Include="test.fsx" />
+    <Compile Include="Libs\Utils.fs" />
+    <Compile Include="Libs\Reflection.fs" />
+    <Compile Include="Libs\CustomViewEngine.fs" />
+    <Compile Include="Libs\Validation.fs" />
+    <Content Include="Settings\Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Settings.fs" />
-    <None Include="test.fsx" />
-    <Compile Include="Reflection.fs" />
-    <Compile Include="CustomViewEngine.fs" />
+    <Compile Include="Settings\Settings.fs" />
+    <Compile Include="UI\UIModel.fs" />
     <Compile Include="Database.fs" />
     <Compile Include="Authentication.fs" />
 

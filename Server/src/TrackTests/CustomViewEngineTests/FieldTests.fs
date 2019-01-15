@@ -4,8 +4,9 @@ module FieldTests =
 
     open Expecto
     open TrackTests.ViewModel
-    open Track.ViewEngine
+    open Utils.ViewEngine
     open Giraffe.GiraffeViewEngine
+    open Track.UI
 
     [<Tests>]
     let tests =
@@ -14,7 +15,7 @@ module FieldTests =
             testCase "Should return correct rendering" <| fun _ ->
                 // Act
                 let value =
-                    field "text" [ _autofocus ] <@ person.FirstName @>
+                    field "text" [ _autofocus ] UI <@ person.FirstName @>
                     |> renderHtmlNodes
 
                 // Assert

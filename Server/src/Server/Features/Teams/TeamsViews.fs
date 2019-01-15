@@ -5,6 +5,7 @@ module View =
     open Giraffe.GiraffeViewEngine
     open Model
     open Utils.ViewEngine
+    open Track.UI
 
     let team (team : Team) = [
         td [ _id (sprintf "team-name-%i" team.TeamId) ] [ str team.Data.TeamName ]
@@ -31,14 +32,14 @@ module View =
             | None -> Url.index
         form [ _method "post"; _icPostTo postTo ] [
             fieldset [] [
-                fieldset [] (field "text" [ _autofocus ] <@ team.TeamName @>)
+                fieldset [] (field "text" [ _autofocus ] Model.teamUI <@ team.TeamName @>)
                 fieldset [] [
                     yield  legend [] [ rawText "Coach" ]
-                    yield! field "text" [] <@ team.FirstName @>
+                    yield! field "text" [] Model.teamUI <@ team.FirstName @>
                     yield  br []
-                    yield! field "text" [] <@ team.LastName @>
+                    yield! field "text" [] Model.teamUI <@ team.LastName @>
                     yield  br []
-                    yield! field "email" [] <@ team.Email @> ]
+                    yield! field "email" [] Model.teamUI <@ team.Email @> ]
                 button [ _type "submit" ] [ rawText "Submit" ]
                 button [ _icGetFrom Url.View.addTeamButton; _icTarget "#edit" ] [ rawText "Cancel" ]
             ]

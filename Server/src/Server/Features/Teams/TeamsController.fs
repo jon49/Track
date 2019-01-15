@@ -27,7 +27,7 @@ module Controller =
 
     let createTeam (ctx : HttpContext) =
         task {
-            let! data = Controller.getForm<Model.Base> ctx
+            let! data = Controller.getForm<Model.Data> ctx
             match! Database.add data with
             | Ok _ -> return View.addTeamButton
             | Error error -> return InternalError.layout error
@@ -43,7 +43,7 @@ module Controller =
     let updateTeam teamId (ctx : HttpContext) userId =
         task {
             //let! teamData = fetchModel< ctx.BindFormAsync<Model.Base>()
-            let! teamData = Controller.getForm<Model.Base> ctx
+            let! teamData = Controller.getForm<Model.Data> ctx
             let team = {
                 TeamId = teamId
                 UserId = userId

@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 15.0.26124.0
@@ -6,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2364C03F-7BC
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Server", "src\Server\Server.fsproj", "{EF178058-7006-4ED9-8268-912C3638A81C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TrackTests", "src\TrackTests\TrackTests.fsproj", "{39193E6F-762B-4F5C-85BF-846D5CBA16D8}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "TrackTests", "src\TrackTests\TrackTests.fsproj", "{39193E6F-762B-4F5C-85BF-846D5CBA16D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
