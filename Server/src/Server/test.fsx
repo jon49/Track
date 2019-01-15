@@ -4,6 +4,7 @@ open Microsoft.FSharp.Quotations.Patterns
 open Microsoft.FSharp.Quotations.DerivedPatterns
 open System
 open Microsoft.FSharp.Reflection
+open System.Linq.Expressions
 
 let rec eval = function
     //| Value(v,t) -> v
@@ -50,3 +51,32 @@ let field (field : Expr<'a> ) =
     propertyName, propertyValue
 
 printfn "%A" (field <@ test.Age @>)
+
+//public static string GetMemberName<T>(this Expression<T> expression)
+//{
+//    switch (expression.Body)
+//    {
+//        case MemberExpression m:
+//            return m.Member.Name;
+//        case UnaryExpression u when u.Operand is MemberExpression m:
+//            return m.Member.Name;
+//        default:
+//            throw new NotImplementedException(expression.GetType().ToString());
+//    }
+//}
+
+type Person = {
+    Age : int
+}
+
+let isNotNull obj =
+    obj
+    |> Option.ofObj
+    |> Option.isSome
+
+let rec getMemberName (expression : Expression<'a>) =
+    match expression.Body with
+    | :? MemberExpression as m when isNotNull m -> m.Member.Name
+    | :? UnaryExpression as u when isNotNull u -> getMemberName (u.Operand :?> Expression<'a>)
+    | _ -> failwith "Expected expression tree."
+

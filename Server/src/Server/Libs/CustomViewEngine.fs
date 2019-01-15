@@ -1,4 +1,4 @@
-﻿namespace Track
+﻿namespace Utils
 
 module ViewEngine =
 
@@ -8,6 +8,7 @@ module ViewEngine =
 
     let str = encodedText
 
+    // Intercooler attributes
     let _icActionTarget = attr "ic-action-target"
     let _icAction = attr "ic-action"
     let _icTarget = attr "ic-target"
@@ -16,6 +17,12 @@ module ViewEngine =
     let _icAppendFrom = attr "ic-append-from"
     let _icSrc = attr "ic-src"
     let _icDeps = attr "ic-deps"
+
+    // jQuery Validation Attributes
+    let _formNoValidate = flag "formnovalidate"
+
+    // Custom
+    let _empty = flag ""
 
     let field ``type`` attrs (field : Expr<'a>) =
         let propertyName =

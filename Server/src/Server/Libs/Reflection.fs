@@ -1,4 +1,4 @@
-﻿namespace Track
+﻿namespace Utils
 
 module Reflection =
 
@@ -62,3 +62,10 @@ module Reflection =
         | Some (None, x) -> x
         | Some (Some x, _) -> x
         | None -> ""
+
+    // http://www.contactandcoil.com/software/dotnet/getting-a-property-name-as-a-string-in-f/
+    let rec propertyName quotation =
+        match quotation with
+        | PropertyGet (_,propertyInfo,_) -> propertyInfo.Name
+        | Lambda (_,expr) -> propertyName expr
+        | _ -> failwith "Unexpected quotation format."

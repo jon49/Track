@@ -7,7 +7,7 @@ module Controller =
     open Giraffe
     open FSharp.Control.Tasks
     open Model
-    open Track.ViewEngine
+    open Utils.ViewEngine
     open Track.Authentication
 
     let indexAction (ctx : HttpContext) =
@@ -51,7 +51,7 @@ module Controller =
             }
             match! Database.update team with
             | Ok x ->
-                ctx.SetHttpHeader <|| Header.``IC-Trigger`` (Url.Put.team teamId userId)
+                ctx.SetHttpHeader <|| Header.``IC-Trigger`` (Url.show teamId userId)
                 return View.addTeamButton
             | Error error -> return InternalError.layout error
         }
@@ -86,7 +86,6 @@ module Controller =
     let teamsCustomEndpoints = router {
         get "/add-button" (htmlView View.addTeamButton)
         get "/latest" getLatestAddedTeam
-        //post "/create" createTeam
     }
 
     let teamsController = controller {
