@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[User]
+﻿CREATE TABLE [track].[User]
 ( [UserId] INT NOT NULL PRIMARY KEY
 , Email nvarchar(256) NOT NULL
 , AuthId varchar(256) NOT NULL

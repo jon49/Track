@@ -57,17 +57,19 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="dbo" />
-    <Folder Include="dbo\Tables" />
+    <Folder Include="track" />
+    <Folder Include="track\Tables" />
+    <Folder Include="Security" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\District.sql" />
-    <Build Include="dbo\Tables\User.sql" />
-    <Build Include="dbo\Tables\Team.sql" />
-    <Build Include="dbo\Tables\Role.sql" />
-    <Build Include="dbo\Tables\Player.sql" />
-    <Build Include="dbo\Tables\Event.sql" />
-    <Build Include="dbo\Tables\Game.sql" />
-    <Build Include="dbo\Tables\PlayerEvent.sql" />
+    <Build Include="track\Tables\District.sql" />
+    <Build Include="track\Tables\User.sql" />
+    <Build Include="track\Tables\Team.sql" />
+    <Build Include="track\Tables\Role.sql" />
+    <Build Include="track\Tables\Player.sql" />
+    <Build Include="track\Tables\Event.sql" />
+    <Build Include="track\Tables\Game.sql" />
+    <Build Include="track\Tables\PlayerEvent.sql" />
+    <Build Include="Security\track.sql" />
   </ItemGroup>
 </Project>
