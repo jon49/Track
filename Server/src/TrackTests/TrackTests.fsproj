@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Include="ViewModel.fs" />
-    <Compile Include="CustomViewEngineTests\FieldTests.fs" />
     <Compile Include="ReflectionTests\GetDisplayNameTests.fs" />
     <Compile Include="ReflectionTests\GetPropertyNameTests.fs" />
     <Compile Include="ReflectionTests\GetPropertyValueTests.fs" />
@@ -25,5 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Server\Server.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CustomViewEngineTests\" />
   </ItemGroup>
 </Project>

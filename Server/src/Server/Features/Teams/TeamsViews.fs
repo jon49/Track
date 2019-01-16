@@ -7,6 +7,9 @@ module View =
     open Utils.ViewEngine
     open Track.UI
 
+    let textInput = inputText Model.teamUI
+    let emailInput = inputEmail Model.teamUI
+
     let team (team : Team) = [
         td [ _id (sprintf "team-name-%i" team.TeamId) ] [ str team.Data.TeamName ]
         td [ _id (sprintf "user-name-%i" team.UserId) ] [ str (sprintf "%s %s" team.Data.FirstName team.Data.LastName) ]
@@ -32,14 +35,14 @@ module View =
             | None -> Url.index
         form [ _method "post"; _icPostTo postTo ] [
             fieldset [] [
-                fieldset [] (field "text" [ _autofocus ] Model.teamUI <@ team.TeamName @>)
+                fieldset [] (textInput <@ team.TeamName @> [ _autofocus ])
                 fieldset [] [
                     yield  legend [] [ rawText "Coach" ]
-                    yield! field "text" [] Model.teamUI <@ team.FirstName @>
+                    yield! textInput <@ team.FirstName @> []
                     yield  br []
-                    yield! field "text" [] Model.teamUI <@ team.LastName @>
+                    yield! textInput <@ team.LastName @> []
                     yield  br []
-                    yield! field "email" [] Model.teamUI <@ team.Email @> ]
+                    yield! emailInput <@ team.Email @> [] ]
                 button [ _type "submit" ] [ rawText "Submit" ]
                 button [ _icGetFrom Url.View.addTeamButton; _icTarget "#edit" ] [ rawText "Cancel" ]
             ]

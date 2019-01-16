@@ -16,12 +16,12 @@ module UI =
         | Some model -> model.DisplayName, model.Validation
         | None -> "", [||]
 
-    let field ``type`` attrs (properties : Map<string, Model>) (field : Expr<'a>) =
+    let field ``type`` (properties : Map<string, Model>) (property : Expr<'a>) attrs =
         let propertyName =
-            getPropertyName field
+            getPropertyName property
             |> Option.defaultValue ""
         let value =
-            getPropertyValue field
+            getPropertyValue property
             |> Option.defaultValue ""
         let displayName, validation = getModel properties propertyName
         let id = propertyName
@@ -36,3 +36,10 @@ module UI =
             yield! attrs
             yield! (validation |> Array.map Validation.createAttribute) ]
         ]
+
+    let inputText (properties : Map<string, Model>) (property : Expr<'a>) attrs =
+        field "text" properties property attrs
+
+    let inputEmail (properties : Map<string, Model>) (property : Expr<'a>) attrs =
+        field "email" properties property attrs
+
