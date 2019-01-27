@@ -14,7 +14,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Settings\Settings.fs" />
-    <Compile Include="UI\UIModel.fs" />
     <Compile Include="Database.fs" />
     <Compile Include="Authentication.fs" />
 

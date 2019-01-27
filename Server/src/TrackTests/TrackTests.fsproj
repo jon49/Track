@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="ViewModel.fs" />
-    <Compile Include="ReflectionTests\GetDisplayNameTests.fs" />
-    <Compile Include="ReflectionTests\GetPropertyNameTests.fs" />
-    <Compile Include="ReflectionTests\GetPropertyValueTests.fs" />
+    <EmbeddedResource Remove="CustomViewEngineTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="Sample.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
@@ -27,6 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CustomViewEngineTests\" />
+    <Folder Include="ReflectionTests\" />
   </ItemGroup>
 </Project>

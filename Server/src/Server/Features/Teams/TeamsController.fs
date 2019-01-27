@@ -8,7 +8,7 @@ module Controller =
     open FSharp.Control.Tasks
     open Model
     open Utils.ViewEngine
-    open Track.Authentication
+    open Utils.Client
 
     let indexAction (ctx : HttpContext) =
         let layoutOptions = {
@@ -24,14 +24,6 @@ module Controller =
 
     let addTeamForm (ctx : HttpContext) =
         task { return View.addEditTeamForm None }
-
-    let createTeam (ctx : HttpContext) =
-        task {
-            let! data = Controller.getForm<Model.Data> ctx
-            match! Database.add data with
-            | Ok _ -> return View.addTeamButton
-            | Error error -> return InternalError.layout error
-        }
 
     let editTeam teamId (ctx : HttpContext) userId =
         task {
@@ -76,6 +68,27 @@ module Controller =
                 let! html = Controller.renderHtml ctx result
                 return html
             }
+
+    let createTeam (ctx : HttpContext) =
+        task {
+            let! model = Controller.getForm<Data> ctx
+            let result =
+                model
+                |> validate
+                |> Result.map clean
+            match result with
+            | Ok x ->
+                match! Database.add x with
+                | Ok _ ->
+                    ctx.Response.StatusCode <- StatusCodes.Status201Created
+                    return View.addTeamButton
+                | Error error ->
+                    ctx.Response.StatusCode <- StatusCodes.Status500InternalServerError
+                    return (str error)
+            | Error error ->
+                ctx.Response.StatusCode <- StatusCodes.Status400BadRequest
+                return (str error)
+        }
 
     let usersController teamId = controller {
         show (getTeam teamId)

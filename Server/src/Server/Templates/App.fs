@@ -18,9 +18,10 @@ let layout option (content: XmlNode list) =
             meta [_charset "utf-8"]
             meta [_name "viewport"; _content "width=device-width, initial-scale=1.0" ]
             title [] [ encodedText "Track" ]
+            link [ _href "/site.css"; _rel "stylesheet" ]
         ]
         body [] [
-            yield header [] [
+            header [] [
                 h1 [] [ rawText "Track &amp; Field" ]
                 nav [] [
                     ul [] [
@@ -28,9 +29,9 @@ let layout option (content: XmlNode list) =
                     ]
                 ]
             ]
-            yield! content
-            yield script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []
-            yield script [ _src "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js" ] []
-            yield script [ _src "/app.js" ] []
+            main [] content
+            script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []
+            script [ _src "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js" ] []
+            script [ _src "/app.js" ] []
         ]
     ]

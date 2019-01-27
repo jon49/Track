@@ -5,11 +5,24 @@ module Reflection =
     open Microsoft.FSharp.Quotations
     open Microsoft.FSharp.Quotations.Patterns
     open System
-    open System.Reflection.Metadata.Ecma335
-    open System.ComponentModel.DataAnnotations
     open System.Reflection
     open System.ComponentModel
     open Microsoft.FSharp.Reflection
+
+    let isOption (a : obj) = 
+        let aType = a.GetType()
+        aType.IsGenericType && aType.GetGenericTypeDefinition() = typedefof<Option<_>>
+
+    let SomeObj (a : obj) =
+        let optionType = typedefof<option<_>>
+        let aType = a.GetType()
+        let v = aType.GetProperty("Value")
+        if aType.IsGenericType && aType.GetGenericTypeDefinition() = optionType
+            then
+                if a = null
+                    then true, None
+                else true, Some(v.GetValue(a, [| |]))
+        else false, if a = null then None else Some a
 
     // http://www.fssnip.net/h1
     let rec eval = function
@@ -33,7 +46,7 @@ module Reflection =
         | arg -> raise <| NotSupportedException(arg.ToString())
     and private evalAll args = [|for arg in args -> eval arg|]
 
-    let private getPropertyInfo (expr : Expr<'a>) =
+    let getPropertyInfo (expr : Expr<'a>) =
         match expr with
         | PropertyGet(_, propInfo, _) -> Some propInfo
         | _ -> None
@@ -42,6 +55,9 @@ module Reflection =
         match eval expr with
         | null -> None
         | x -> Some (x :?> 't)
+
+    let getValue (propertyName : string) (obj : 'a) =
+        obj.GetType().GetProperty(propertyName).GetValue(obj)
 
     let getPropertyName expr =
         getPropertyInfo expr

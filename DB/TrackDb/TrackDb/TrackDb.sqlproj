@@ -71,5 +71,6 @@
     <Build Include="track\Tables\Game.sql" />
     <Build Include="track\Tables\PlayerEvent.sql" />
     <Build Include="Security\track.sql" />
+    <Build Include="track\Tables\UserTeam.sql" />
   </ItemGroup>
 </Project>
