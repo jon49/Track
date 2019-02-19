@@ -11,6 +11,7 @@ module Authentication =
     open Microsoft.AspNetCore.Authentication.OpenIdConnect
     open System.Threading.Tasks
     open System
+    open System.Security.Claims
 
     let private addCookie state (c : AuthenticationBuilder) =
         if not state.CookiesAlreadyAdded
@@ -56,6 +57,7 @@ module Authentication =
             opt.ResponseType <- "code"
             opt.ClaimsIssuer <- "Auth0"
             opt.Events <- events
+            opt.ClaimActions.MapJsonKey(ClaimTypes.Email, "Email")
 
         new System.Action<OpenIdConnectOptions>(options)
 

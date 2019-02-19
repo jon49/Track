@@ -6,22 +6,35 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="test.fsx" />
-    <Compile Include="Libs\Utils.fs" />
-    <Compile Include="Libs\Reflection.fs" />
-    <Compile Include="Libs\CustomViewEngine.fs" />
-    <Compile Include="Libs\Validation.fs" />
     <Content Include="Settings\Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Settings\Settings.fs" />
-    <Compile Include="Database.fs" />
-    <Compile Include="Authentication.fs" />
+    <Compile Include="Libs\Utils.fs" />
+    <Compile Include="Libs\Reflection.fs" />
+    <Compile Include="Libs\CustomViewEngine.fs" />
+    <Compile Include="Libs\Client.fs" />
+    <Compile Include="Libs\UI.fs" />
+    <Compile Include="System\AspNetUtil.fs" />
+    <Compile Include="System\Cache.fs" />
+    <Compile Include="System\Authentication.fs" />
 
     <Compile Include="Templates\App.fs" />
-    <Compile Include="Templates\Index.fs" />
     <Compile Include="Templates\NotFound.fs" />
     <Compile Include="Templates\InternalError.fs" />
+    <Compile Include="Features\Shared\Models\User.fs" />
+    <None Include="Features\Shared\Sql\UserStatus.sql" />
+    <None Include="Features\Shared\Sql\UserPermissions.sql" />
+    <Compile Include="Features\Shared\Shared.fs" />
+    <Compile Include="Features\Shared\Register.fs" />
     <Compile Include="Features\Accounts\AccountsController.fs" />
+    <Compile Include="Features\Pages\Welcome.fs" />
+    <Compile Include="Features\Pages\Index.fs" />
+    <Compile Include="Features\FirstTime\FirstTimeModel.fs" />
+    <Compile Include="Features\FirstTime\FirstTimeUrl.fs" />
+    <Compile Include="Features\FirstTime\FirstTimeView.fs" />
+    <Compile Include="Features\FirstTime\FirstTimeController.fs" />
+    <Compile Include="Features\Coaches\CoachesUrl.fs" />
     <Compile Include="Features\Teams\TeamsModel.fs" />
     <Compile Include="Features\Teams\TeamsUrl.fs" />
     <Compile Include="Features\Teams\TeamsViews.fs" />
@@ -40,6 +53,9 @@
   <ItemGroup>
     <PackageReference Update="Giraffe" Version="3.5.0" />
     <PackageReference Update="Saturn" Version="0.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\FirstTime\Sql\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

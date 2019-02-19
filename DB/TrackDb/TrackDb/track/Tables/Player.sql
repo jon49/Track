@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [track].[Player]
-( [PlayerId] INT NOT NULL PRIMARY KEY
+( [PlayerId] INT NOT NULL IDENTITY(1,1) PRIMARY KEY
 , TeamId int NOT NULL
 , [Name] nvarchar(128) NOT NULL
 , Gender char(1) NOT NULL

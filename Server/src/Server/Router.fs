@@ -3,17 +3,8 @@ module Router
 open Saturn
 open Giraffe.Core
 open Giraffe.ResponseWriters
-open Track.Settings
-open System.Security.Claims
-open System.IdentityModel.Tokens.Jwt
-open System
-open Saturn
-open Microsoft.IdentityModel.Tokens
-open Microsoft.AspNetCore.Http
-open Giraffe.Core
-open Giraffe
-open FSharp.Control.Tasks
-open Track.Authentication
+open Track
+open Track.Controller
 
 let browser = pipeline {
     plug (mustAccept ["text/html"; "text/html-partial"])
@@ -27,22 +18,28 @@ let insecureRoutes = router {
     forward "" Accounts.Controller.accounts
     get "/index.html" (redirectTo false "/")
     get "/default.html" (redirectTo false "/")
+}
+
+let ``404`` = router {
     not_found_handler (htmlView NotFound.layout) //Use the default 404 webpage
 }
 
 let authenticated = pipeline {
     requires_authentication (Giraffe.Auth.challenge "Auth0")
+    plug Register.user
 }
 
 let securedRoutes = router {
     pipe_through browser //Use the default browser pipeline
     pipe_through authenticated
 
+    forward "/first-time" FirstTime.coordinator
     forward "/teams" Teams.Controller.teamsController
-    forward "/teams" Teams.Controller.teamsCustomEndpoints
+    //forward "/teams" Teams.Controller.teamsCustomEndpoints
 }
 
 let allRouters = router {
-    forward "" securedRoutes
     forward "" insecureRoutes
+    forward "" securedRoutes
+    forward "" ``404``
 }

@@ -8,6 +8,8 @@ module Reflection =
     open System.Reflection
     open System.ComponentModel
     open Microsoft.FSharp.Reflection
+    open System.ComponentModel.DataAnnotations
+    open System.Linq
 
     let isOption (a : obj) = 
         let aType = a.GetType()
@@ -68,8 +70,8 @@ module Reflection =
             getPropertyInfo expr
             |> Option.map (fun x ->
                 let displayName =
-                    if x.IsDefined(typeof<DisplayNameAttribute>)
-                        then Some <| x.GetCustomAttribute<DisplayNameAttribute>().DisplayName
+                    if x.IsDefined(typeof<DisplayAttribute>)
+                        then Some <| x.GetCustomAttribute<DisplayAttribute>().Name
                     else None
                 displayName, x.Name )
         match names with
@@ -78,6 +80,17 @@ module Reflection =
         | Some (None, x) -> x
         | Some (Some x, _) -> x
         | None -> ""
+
+    let getCustomAttributes<'a, 'b when 'a :> Attribute and 'b :> obj> (expr : Expr<'b>) =
+        getPropertyInfo expr
+        |> Option.map (fun x ->
+            ((x.GetCustomAttributes(typeof<'a>, false)).OfType<'a>())
+            |> Seq.toArray
+        )
+
+    let getCustomAttribute<'a when 'a :> Attribute> (expr : Expr<obj>) =
+        getPropertyInfo expr
+        |> Option.map (fun x -> x.GetCustomAttribute<'a>() )
 
     // http://www.contactandcoil.com/software/dotnet/getting-a-property-name-as-a-string-in-f/
     let rec propertyName quotation =

@@ -1,0 +1,7 @@
+﻿CREATE TABLE [track].[CoachInvitation]
+( TempId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID()
+, ExpirationDateTime DATETIME NOT NULL
+, TeamId INT NOT NULL
+, Registered BIT NOT NULL DEFAULT 0
+, CONSTRAINT FK_CoachInvitation_TeamId FOREIGN KEY (TeamId) REFERENCES track.Team (TeamId)
+)

@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [track].[Game]
-( [GameId] INT NOT NULL PRIMARY KEY
-, DistrictId int NOT NULL
+( [GameId] INT NOT NULL IDENTITY(1,1) PRIMARY KEY
+, RegionId int NOT NULL
 , [DateTime] datetimeoffset NOT NULL
 , [Location] nvarchar(128) NOT NULL
-, CONSTRAINT [FK_Game_DistrictId] FOREIGN KEY ([DistrictId]) REFERENCES [track].[District]([DistrictId])
+, CONSTRAINT [FK_Game_RegionId] FOREIGN KEY ([RegionId]) REFERENCES [track].[Region]([RegionId])
 )

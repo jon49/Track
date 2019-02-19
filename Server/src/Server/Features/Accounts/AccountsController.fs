@@ -10,6 +10,9 @@ module Controller =
     open Giraffe
     open Saturn
     open Track.Authentication
+    open Track
+    open Track.Repository
+    open Track.AspNet
 
     let login : HttpHandler =
         fun next ctx ->
@@ -20,6 +23,7 @@ module Controller =
 
     let logout : HttpHandler =
         fun next ctx ->
+            Cache.remove (User.cacheKey <| AspNet.getAuth0Id ctx)
             let result = signOut "Cookies" next ctx
             redirectTo false "/" next ctx
 

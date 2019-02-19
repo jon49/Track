@@ -1,62 +1,27 @@
-﻿namespace Teams
+﻿namespace Track.Repository 
 
-module Database =
+open FSharp.Data
+open Track.Settings
 
-    open Model
-    open FSharp.Control.Tasks
-    open System.Threading.Tasks
 
-    let mutable private teams = [
-        {
-            Data = {
-                Email = "millie@dns.com"
-                FirstName = "Millie"
-                LastName = "Nyman"
-                TeamName = "Fastest Team Ever"
-            }
-            TeamId = 1
-            UserId = 1
-        }
-        {
-            Data = {
-                Email = "jorge@321.com"
-                FirstName = "Jorge"
-                LastName = "George"
-                TeamName = "Really Fast Team"
-            }
-            TeamId = 2
-            UserId = 2
-        }
-    ]
 
-    let all () =
-        Task.FromResult <| Ok teams
+//module Region =
 
-    let add (team : Data) =
-        let newId = teams.Length + 1
-        teams <- { Data = team; TeamId = newId; UserId = newId }::teams
-        Ok ()
-        |> Task.FromResult
+//    let getRegion userId =
+//        ""
 
-    let find (teamId : int) (userId : int) =
-        teams
-        |> List.tryFind (fun x -> x.TeamId = teamId && x.UserId = userId)
-        |> Ok
-        |> Task.FromResult
+//module Team =
 
-    let getLastest () =
-        match teams with
-        | team::xs -> Ok team
-        | _ -> Error "Could not get latest team."
-        |> Task.FromResult
+    //let All districtId =
+    //    use cmd = new SqlCommandProvider<"
+    //    SELECT *
+    //    FROM track.Team t
+    //    WHERE t.DistrictId = @DistrictID
+    //    ", CONNECTION_STRING>(Setting.Database.Connection)
 
-    let update (team : Team) =
-        teams <- teams
-        |> List.map (fun x -> 
-            if x.TeamId = team.TeamId && x.UserId = team.UserId
-                then team
-            else x )
-        Ok ()
-        |> Task.FromResult
-        
+    //    cmd.AsyncExecute(districtId)
+
+    //let Create name =
+    //    use cmd new SqlCommandProvider<"
+    //    "
 

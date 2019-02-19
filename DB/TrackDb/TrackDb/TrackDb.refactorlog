@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="9a1eb81c-7d08-4090-ba61-71e32882957c" ChangeDateTime="01/31/2019 11:07:28">
+    <Property Name="ElementName" Value="[track].[District].[DistrictId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[track].[District]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RegionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cf9c4959-0353-4997-a776-0b6bce1c4d36" ChangeDateTime="01/31/2019 11:08:05">
+    <Property Name="ElementName" Value="[track].[UserDistrict].[DistrictId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[track].[UserDistrict]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="RegionId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2b2e9342-d8af-4b0b-a8c7-1e44416d1b54" ChangeDateTime="02/01/2019 03:09:52">
+    <Property Name="ElementName" Value="[track].[User].[AuthId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[track].[User]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Auth0Id" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="ea2e19e6-8be0-4d3b-9194-f40be440b5a2" ChangeDateTime="02/04/2019 23:18:03">
+    <Property Name="ElementName" Value="[track].[UserTeam].[Actice]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[track].[UserTeam]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Active" />
+  </Operation>
+</Operations>

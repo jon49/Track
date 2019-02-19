@@ -2,5 +2,7 @@ FSharp.Data
 FSharp.Core
 Saturn
 Microsoft.AspNetCore.Authentication.OpenIdConnect
+FSharp.Data.SqlClient
+System.Runtime.Caching
 
 dotnet-saturn

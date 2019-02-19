@@ -11,3 +11,4 @@ module Url =
         let edit = sprintf "/teams/%i/users/%i/edit"
         let addTeamButton = "/teams/add-button"
         let addTeamForm = "/teams/add"
+        let addCoachForm = sprintf "/teams/%i/add"

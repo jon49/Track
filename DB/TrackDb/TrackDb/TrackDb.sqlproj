@@ -60,9 +60,12 @@
     <Folder Include="track" />
     <Folder Include="track\Tables" />
     <Folder Include="Security" />
+    <Folder Include="track\Stored Procedures" />
+    <Folder Include="util" />
+    <Folder Include="util\User Defined Types" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="track\Tables\District.sql" />
+    <Build Include="track\Tables\Region.sql" />
     <Build Include="track\Tables\User.sql" />
     <Build Include="track\Tables\Team.sql" />
     <Build Include="track\Tables\Role.sql" />
@@ -72,5 +75,21 @@
     <Build Include="track\Tables\PlayerEvent.sql" />
     <Build Include="Security\track.sql" />
     <Build Include="track\Tables\UserTeam.sql" />
+    <Build Include="track\Tables\UserRegion.sql" />
+    <Build Include="track\Tables\CoachInvitation.sql" />
+    <Build Include="track\Tables\CoordinatorInvitation.sql" />
+    <Build Include="track\Stored Procedures\NewCoordinator.sql" />
+    <Build Include="track\Stored Procedures\NewCoach.sql" />
+    <Build Include="track\Stored Procedures\GetUserInfo.sql" />
+    <Build Include="track\Stored Procedures\AddUser.sql" />
+    <Build Include="Security\util.sql" />
+    <Build Include="util\User Defined Types\Ids.sql" />
+    <Build Include="track\Tables\UserRole.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TrackDb.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="TrackDb.refactorlog" />
   </ItemGroup>
 </Project>
