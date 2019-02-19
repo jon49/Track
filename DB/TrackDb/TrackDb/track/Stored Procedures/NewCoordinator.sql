@@ -43,6 +43,11 @@ BEGIN
     FROM track.CoordinatorInvitation t
     WHERE t.TempId = @TempGuidId
 
+    UPDATE t
+    SET t.PreferredRegionId = (SELECT t.RegionId FROM @Return t)
+    FROM track.[User] t
+    WHERE t.UserId = @UserId
+
     COMMIT TRANSACTION
 END;
 

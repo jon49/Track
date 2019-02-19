@@ -8,6 +8,8 @@ SELECT
 	, u.FirstName
 	, u.LastName
 	, u.UserId
+    , u.PreferredRegionId
+    , u.PreferredTeamId
 	, ur.RegionId
 	, ut.TeamId
     , r.[Name] RoleName

@@ -1,15 +1,11 @@
 ﻿namespace Accounts
 
 module Controller =
-    open Microsoft.AspNetCore.Http
-    open FSharp.Control.Tasks
     open Microsoft.AspNetCore.Http.Authentication
     open Giraffe
     open Microsoft.AspNetCore.Authentication
     open FSharp.Control.Tasks.V2.ContextInsensitive
-    open Giraffe
     open Saturn
-    open Track.Authentication
     open Track
     open Track.Repository
     open Track.AspNet
@@ -29,5 +25,5 @@ module Controller =
 
     let accounts = router {
         get "/login" login
-        get "/logout" logout
+        post "/logout" logout
     }

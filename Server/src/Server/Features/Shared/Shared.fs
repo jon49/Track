@@ -29,14 +29,16 @@ module User =
         | _ -> None
 
     type T = {
-        UserId : int
         Auth0Id : string
         Email : string option
         FirstName : string
         LastName : string
-        TeamIds : Set<int>
+        PreferredRegionId : int option
+        PreferredTeamId : int option
         RegionIds : Set<int>
         Roles : Set<Role>
+        TeamIds : Set<int>
+        UserId : int
     }
 
     let addUser ctx =
@@ -67,14 +69,16 @@ module User =
                             |> Set
                         Some <|
                         {
-                            UserId = user.UserId
                             Auth0Id = authId.ToString()
                             Email = user.Email
                             FirstName = user.FirstName
                             LastName = user.LastName
-                            TeamIds = teams
+                            PreferredRegionId = user.PreferredRegionId
+                            PreferredTeamId = user.PreferredTeamId
                             RegionIds = regions
                             Roles = roles
+                            TeamIds = teams
+                            UserId = user.UserId
                         }
                 return user
             }

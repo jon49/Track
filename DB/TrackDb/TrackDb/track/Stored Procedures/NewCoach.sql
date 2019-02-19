@@ -43,6 +43,11 @@ BEGIN
     FROM track.CoachInvitation t
     WHERE t.TempId = @TempGuidId
 
+    UPDATE t
+    SET t.PreferredTeamId = (SELECT t.TeamId FROM @Return t)
+    FROM track.[User] t
+    WHERE t.UserId = @UserId
+
     COMMIT TRANSACTION
 END;
 
