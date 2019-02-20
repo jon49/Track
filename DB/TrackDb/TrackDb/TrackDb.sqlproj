@@ -85,6 +85,7 @@
     <Build Include="Security\util.sql" />
     <Build Include="util\User Defined Types\Ids.sql" />
     <Build Include="track\Tables\UserRole.sql" />
+    <Build Include="track\Tables\RegionTeam.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />
