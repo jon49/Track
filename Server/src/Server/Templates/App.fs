@@ -1,23 +1,23 @@
 module App
 
 open Giraffe.GiraffeViewEngine
+open Utils.ViewEngine
+open Track.User
 
-type LayoutOptions = {
-    IsAuthenticated : bool
-}
-
-let layout option (content: XmlNode list) =
+let layout userType (content: XmlNode list) =
 
     let authenticatedNavigation =
-        if option.IsAuthenticated
-            then li [ _id "btn-logout" ] [ a [ _href "/logout" ] [ rawText "Logout" ] ]
-        else li [ _id "btn-login" ] [ a [ _href "/login" ] [ rawText "Login" ] ]
+        match userType with
+        | Registered | Authenticated ->
+            li [ _id "btn-logout" ] [ button [ _icPostTo "/logout" ] [ rawText "Logout" ] ]
+        | UnknownUser ->
+            li [ _id "btn-login" ] [ a [ _href "/login" ] [ rawText "Login" ] ]
 
     html [] [
         head [] [
             meta [_charset "utf-8"]
             meta [_name "viewport"; _content "width=device-width, initial-scale=1.0" ]
-            title [] [ encodedText "Track" ]
+            title [] [ rawText "Track" ]
             link [ _href "/site.css"; _rel "stylesheet" ]
         ]
         body [] [

@@ -18,28 +18,9 @@ module User =
     open Track
     open Track.AspNet
     open Track.AspNet.AspNet
+    open Track.User
 
     let cacheKey (authId : AuthId) = sprintf "user-info-%s" (authId.ToString())
-
-    type Role = Coordinator | Coach
-
-    let getRole = function
-        | "Coordinator" -> Some Coordinator
-        | "Coach" -> Some Coach
-        | _ -> None
-
-    type T = {
-        Auth0Id : string
-        Email : string option
-        FirstName : string
-        LastName : string
-        PreferredRegionId : int option
-        PreferredTeamId : int option
-        RegionIds : Set<int>
-        Roles : Set<Role>
-        TeamIds : Set<int>
-        UserId : int
-    }
 
     let addUser ctx =
         async {
@@ -79,6 +60,10 @@ module User =
                             Roles = roles
                             TeamIds = teams
                             UserId = user.UserId
+                            Type =
+                                match regions.IsEmpty && teams.IsEmpty with
+                                | true -> Authenticated
+                                | false -> Registered
                         }
                 return user
             }

@@ -18,6 +18,7 @@
     <Compile Include="System\AspNetUtil.fs" />
     <Compile Include="System\Cache.fs" />
     <Compile Include="System\Authentication.fs" />
+    <Compile Include="System\User.fs" />
 
     <Compile Include="Templates\App.fs" />
     <Compile Include="Templates\NotFound.fs" />
