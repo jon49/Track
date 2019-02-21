@@ -7,41 +7,39 @@ module UI =
     open Microsoft.FSharp.Quotations
     open System.ComponentModel.DataAnnotations
 
-    let radio<'a when 'a :> obj> name (expr : Expr<'a>) attrs =
-        let propertyName = propertyName expr
-        let value = getPropertyValue expr |> Option.defaultValue 0 |> int |> string
-        let displayName = getDisplayName expr
+    let radio name (a : 'a) (expr : Expr<'a -> int>) attrs =
+        let pi = getPropertyInfo expr
+        let value = getValue pi a |> Option.ofObj |> Option.map (fun x -> x :?> int) |> Option.defaultValue 0 |> string
+        let displayName = getDisplayName pi
         [
         input [
             yield _type "radio"
             yield _name name
-            yield _id propertyName
+            yield _id pi.Name
             yield _value value
             yield! attrs ]
-        label [ _for propertyName ] [ rawText displayName ]
+        label [ _for pi.Name ] [ rawText displayName ]
         ]
 
-    let input<'a when 'a :> obj> ``type`` (expr : Expr<'a>) attrs =
-        let propertyName = propertyName expr
-        let value = getPropertyValue expr
+    let input<'a, 'b when 'a :> obj and 'b :> obj> ``type`` (a : 'a) (expr : Expr<'a -> 'b>) attrs =
+        let pi = getPropertyInfo expr
+        let value = getValue pi a
         let required = not <| Reflection.isOption value
-        let displayName = getDisplayName expr
-        let validationAttributes = Reflection.getCustomAttributes<ValidationAttribute, 'a> expr
+        let displayName = getDisplayName pi
+        let validationAttributes = Reflection.getCustomAttributes<ValidationAttribute> pi
         let friendlyMessage = Client.getFriendlyMessage validationAttributes
         let validationAttributes = Client.getHtmlValidationAttributes validationAttributes
-            
-        let id = propertyName
 
         [
-        label [ _for id; _title (Option.defaultValue "" friendlyMessage) ] [ rawText displayName ]
+        label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
         input [
             yield _type ``type``
             yield _value <| string value
-            yield _name propertyName
-            yield _id id
+            yield _name pi.Name
+            yield _id pi.Name
             yield! (if required then [ _required; _placeholder "Required" ] else [ _empty ])
             yield! attrs
-            yield! Option.defaultValue [] validationAttributes ]
+            yield! validationAttributes ]
         ]
 
     let inputText expr attrs = input "text" expr attrs

@@ -26,75 +26,31 @@ module Reflection =
                 else true, Some(v.GetValue(a, [| |]))
         else false, if a = null then None else Some a
 
-    // http://www.fssnip.net/h1
-    let rec eval = function
-        | Value(v,t) -> v
-        | Coerce(e,t) -> eval e
-        | NewObject(ci,args) -> ci.Invoke(evalAll args)
-        | NewArray(t,args) -> 
-            let array = Array.CreateInstance(t, args.Length) 
-            args |> List.iteri (fun i arg -> array.SetValue(eval arg, i))
-            box array
-        | NewUnionCase(case,args) -> FSharpValue.MakeUnion(case, evalAll args)
-        | NewRecord(t,args) -> FSharpValue.MakeRecord(t, evalAll args)
-        | NewTuple(args) ->
-            let t = FSharpType.MakeTupleType [|for arg in args -> arg.Type|]
-            FSharpValue.MakeTuple(evalAll args, t)
-        | FieldGet(Some(Value(v,_)),fi) -> fi.GetValue(v)
-        | PropertyGet(None, pi, args) -> pi.GetValue(null, evalAll args)
-        | PropertyGet(Some(x),pi,args) -> pi.GetValue(eval x, evalAll args)
-        | Call(None,mi,args) -> mi.Invoke(null, evalAll args)
-        | Call(Some(x),mi,args) -> mi.Invoke(eval x, evalAll args)
-        | arg -> raise <| NotSupportedException(arg.ToString())
-    and private evalAll args = [|for arg in args -> eval arg|]
+    // http://www.contactandcoil.com/software/dotnet/getting-a-property-name-as-a-string-in-f/
+    let rec getPropertyInfo quotation =
+        match quotation with
+        | PropertyGet (_,propertyInfo,_) -> propertyInfo
+        | Lambda (_,expr) -> getPropertyInfo expr
+        | _ -> failwith "Expected some property information for quotation."
 
-    let getPropertyInfo (expr : Expr<'a>) =
-        match expr with
-        | PropertyGet(_, propInfo, _) -> Some propInfo
-        | _ -> None
+    let getValue (propertyInfo : PropertyInfo) (obj : 'a) =
+        obj.GetType().GetProperty(propertyInfo.Name).GetValue(obj)
 
-    let getPropertyValue (expr: Expr<'a>) =
-        match eval expr with
-        | null -> None
-        | x -> Some (x :?> 't)
-
-    let getValue (propertyName : string) (obj : 'a) =
-        obj.GetType().GetProperty(propertyName).GetValue(obj)
-
-    let getPropertyName expr =
-        getPropertyInfo expr
-        |> Option.map (fun x -> x.Name)
-
-    let getDisplayName (expr: Expr<'a>) =
+    let getDisplayName (propertyInfo: PropertyInfo) =
         let names =
-            getPropertyInfo expr
-            |> Option.map (fun x ->
-                let displayName =
-                    if x.IsDefined(typeof<DisplayAttribute>)
-                        then Some <| x.GetCustomAttribute<DisplayAttribute>().Name
-                    else None
-                displayName, x.Name )
+            let displayName =
+                if propertyInfo.IsDefined(typeof<DisplayAttribute>)
+                    then propertyInfo.GetCustomAttribute<DisplayAttribute>().Name |> Option.ofObj
+                else None
+            displayName, propertyInfo.Name
         match names with
-        | Some (Some null, x)
-        | Some (Some "", x)
-        | Some (None, x) -> x
-        | Some (Some x, _) -> x
-        | None -> ""
+        | Some "", x -> x
+        | Some x, _ -> x
+        | None, x -> x
 
-    let getCustomAttributes<'a, 'b when 'a :> Attribute and 'b :> obj> (expr : Expr<'b>) =
-        getPropertyInfo expr
-        |> Option.map (fun x ->
-            ((x.GetCustomAttributes(typeof<'a>, false)).OfType<'a>())
-            |> Seq.toArray
-        )
+    let getCustomAttributes<'a> (pi : PropertyInfo) =
+        pi.GetCustomAttributes(typeof<'a>, false).OfType<'a>()
+        |> Seq.toArray
 
     let getCustomAttribute<'a when 'a :> Attribute> (expr : Expr<obj>) =
-        getPropertyInfo expr
-        |> Option.map (fun x -> x.GetCustomAttribute<'a>() )
-
-    // http://www.contactandcoil.com/software/dotnet/getting-a-property-name-as-a-string-in-f/
-    let rec propertyName quotation =
-        match quotation with
-        | PropertyGet (_,propertyInfo,_) -> propertyInfo.Name
-        | Lambda (_,expr) -> propertyName expr
-        | _ -> failwith "Unexpected quotation format."
+        (getPropertyInfo expr).GetCustomAttribute<'a>()

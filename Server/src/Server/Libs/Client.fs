@@ -12,9 +12,9 @@ module Client =
 
     let getDisplayName = Reflection.getDisplayName
 
-    let getFriendlyMessage (validationAttributes : ValidationAttribute[] option) =
+    let getFriendlyMessage (validationAttributes : ValidationAttribute[]) =
         validationAttributes
-        |> Option.map (fun xs ->
+        |> fun xs ->
             xs
             |> Seq.choose (fun x ->
                 match x with
@@ -26,11 +26,10 @@ module Client =
                 | _ -> None
             )
             |> String.concat " &ndash; "
-        )
 
-    let getHtmlValidationAttributes (validationAttributes : ValidationAttribute[] option) =
+    let getHtmlValidationAttributes (validationAttributes : ValidationAttribute[]) =
         validationAttributes
-        |> Option.map (fun xs ->
+        |> fun xs ->
             xs
             |> Array.map (fun x ->
                 match x with
@@ -41,5 +40,3 @@ module Client =
                 | _ -> []
             )
             |> List.concat
-        )
-
