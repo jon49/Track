@@ -10,13 +10,11 @@ module Controller =
     open Utils.ViewEngine
     open Utils.Client
     open Giraffe
+    open Track
 
     let indexAction (ctx : HttpContext) =
-        let layoutOptions = {
-            App.IsAuthenticated = true
-        }
         task {
-            return (App.layout layoutOptions [ GiraffeViewEngine.p [] [ GiraffeViewEngine.rawText "Hello!" ] ])
+            return (App.layout User.Type.Authenticated [ GiraffeViewEngine.p [] [ GiraffeViewEngine.rawText "Hello!" ] ])
             //match! Repository.all () with
             //| Ok result ->
             //    return App.layout layoutOptions <| View.all result

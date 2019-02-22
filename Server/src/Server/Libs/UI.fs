@@ -6,6 +6,17 @@ module UI =
     open Utils.ViewEngine
     open Microsoft.FSharp.Quotations
     open System.ComponentModel.DataAnnotations
+    open Giraffe
+
+    [<Struct>]
+    type InputSettings = {
+        Attrs : seq<XmlAttribute>
+        AddLabel : bool
+    } with
+        static member Init = {
+            Attrs = []
+            AddLabel = true
+        }
 
     let radio name (a : 'a) (expr : Expr<'a -> int>) attrs =
         let pi = getPropertyInfo expr
@@ -21,7 +32,7 @@ module UI =
         label [ _for pi.Name ] [ rawText displayName ]
         ]
 
-    let input<'a, 'b when 'a :> obj and 'b :> obj> ``type`` (a : 'a) (expr : Expr<'a -> 'b>) attrs =
+    let input<'a, 'b when 'a :> obj and 'b :> obj> ``type`` settings (a : 'a) (expr : Expr<'a -> 'b>) =
         let pi = getPropertyInfo expr
         let value = getValue pi a
         let required = not <| Reflection.isOption value
@@ -30,15 +41,20 @@ module UI =
         let friendlyMessage = Client.getFriendlyMessage validationAttributes
         let validationAttributes = Client.getHtmlValidationAttributes validationAttributes
 
+        let label =
+            if settings.AddLabel then
+                label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
+            else GiraffeViewEngine.emptyText
+
         [
-        label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
+        label
         input [
             yield _type ``type``
             yield _value <| string value
             yield _name pi.Name
             yield _id pi.Name
             yield! (if required then [ _required; _placeholder "Required" ] else [ _empty ])
-            yield! attrs
+            yield! settings.Attrs
             yield! validationAttributes ]
         ]
 

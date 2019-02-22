@@ -1,7 +1,6 @@
-﻿CREATE PROCEDURE [track].[GetUserInfo]
-  @Auth0Id varchar(256)
-AS
-
+﻿CREATE FUNCTION [track].[GetUserInfo]
+( @Auth0Id varchar(256)
+) RETURNS TABLE AS RETURN (
 SELECT
 	  u.Auth0Id
 	, u.Email
@@ -20,6 +19,5 @@ LEFT JOIN (
     track.UserRole
     JOIN track.[Role] r ON r.RoleId = UserRole.RoleId
     ) ON ur.UserId = u.UserId
-WHERE u.Auth0Id = @Auth0Id;
-
-RETURN 0
+WHERE u.Auth0Id = @Auth0Id
+)

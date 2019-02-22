@@ -34,6 +34,7 @@ let securedRoutes = router {
     pipe_through authenticated
 
     forward "/first-time" FirstTime.coordinator
+    forward "/regions" Regions.Controller.regionsController
     forward "/teams" Teams.Controller.teamsController
     //forward "/teams" Teams.Controller.teamsCustomEndpoints
 }

@@ -63,6 +63,7 @@
     <Folder Include="track\Stored Procedures" />
     <Folder Include="util" />
     <Folder Include="util\User Defined Types" />
+    <Folder Include="track\Functions" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="track\Tables\Region.sql" />
@@ -80,12 +81,16 @@
     <Build Include="track\Tables\CoordinatorInvitation.sql" />
     <Build Include="track\Stored Procedures\NewCoordinator.sql" />
     <Build Include="track\Stored Procedures\NewCoach.sql" />
-    <Build Include="track\Stored Procedures\GetUserInfo.sql" />
     <Build Include="track\Stored Procedures\AddUser.sql" />
     <Build Include="Security\util.sql" />
     <Build Include="util\User Defined Types\Ids.sql" />
     <Build Include="track\Tables\UserRole.sql" />
     <Build Include="track\Tables\RegionTeam.sql" />
+    <Build Include="track\Functions\GetRegions.sql" />
+    <Build Include="track\Functions\GetUserInfo.sql" />
+    <Build Include="track\Stored Procedures\AddRegion.sql" />
+    <Build Include="track\Stored Procedures\EditRegion.sql" />
+    <Build Include="track\Functions\GetRegionLatest.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />
