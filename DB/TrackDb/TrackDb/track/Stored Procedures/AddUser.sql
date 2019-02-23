@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [track].[AddUser]
+﻿CREATE PROCEDURE [track_api].[AddUser]
   @Auth0Id varchar(256)
 , @FirstName nvarchar(32)
 , @LastName nvarchar(32)

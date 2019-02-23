@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [track].[GetRegionLatest]
+﻿CREATE FUNCTION [track_api].[GetRegionLatest]
 ( @UserId int
 ) RETURNS TABLE AS RETURN (
 SELECT TOP 1

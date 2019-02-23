@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [track].[GetUserInfo]
+﻿CREATE FUNCTION [track_api].[GetUserInfo]
 ( @Auth0Id varchar(256)
 ) RETURNS TABLE AS RETURN (
 SELECT

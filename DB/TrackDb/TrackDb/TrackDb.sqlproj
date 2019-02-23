@@ -79,8 +79,8 @@
     <Build Include="track\Tables\UserRegion.sql" />
     <Build Include="track\Tables\CoachInvitation.sql" />
     <Build Include="track\Tables\CoordinatorInvitation.sql" />
-    <Build Include="track\Stored Procedures\NewCoordinator.sql" />
-    <Build Include="track\Stored Procedures\NewCoach.sql" />
+    <Build Include="track\Stored Procedures\AddCoordinator.sql" />
+    <Build Include="track\Stored Procedures\AddCoach.sql" />
     <Build Include="track\Stored Procedures\AddUser.sql" />
     <Build Include="Security\util.sql" />
     <Build Include="util\User Defined Types\Ids.sql" />
@@ -91,6 +91,9 @@
     <Build Include="track\Stored Procedures\AddRegion.sql" />
     <Build Include="track\Stored Procedures\EditRegion.sql" />
     <Build Include="track\Functions\GetRegionLatest.sql" />
+    <Build Include="track\Stored Procedures\AddLogEntry.sql" />
+    <Build Include="Security\track.api.sql" />
+    <Build Include="track\Tables\Log.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />

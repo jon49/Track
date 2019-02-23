@@ -1,4 +1,4 @@
-﻿CREATE FUNCTION [track].[GetRegions]
+﻿CREATE FUNCTION [track_api].[GetRegions]
 ( @UserId int
 ) RETURNS TABLE AS RETURN (
 SELECT
