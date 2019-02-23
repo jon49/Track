@@ -9,9 +9,31 @@ module Shared =
     [<Literal>]
     let CONNECTION_STRING = @"Data Source=.\SQLEXPRESS;Initial Catalog=JNyman;Integrated Security=True"
 
+[<AutoOpen>]
 module StoredProcedures =
     
-    type Track = SqlProgrammabilityProvider<Shared.CONNECTION_STRING>
+    open Track
+
+    type DB = SqlProgrammabilityProvider<Shared.CONNECTION_STRING>
+
+    let conn = Setting.Database.Connection
+
+    let repoTry f asyncValue =
+        async {
+        try
+            let! result = asyncValue ()
+            return Ok <| f result
+        with
+        | ex ->
+            use cmd = new DB.track_api.AddLogEntry(conn)
+            let! result = cmd.AsyncExecute(ex.Message, ex.ToString())
+            return Error <| Errors.DBError [ "An error occurred and is being looked into." ]
+        }
+        |> Async.StartAsTask
+
+    let tryList f = repoTry (fun xs -> xs |> Seq.toList) f
+
+    let tryId f = repoTry id f
 
 module User =
 
@@ -23,17 +45,15 @@ module User =
     let cacheKey (authId : AuthId) = sprintf "user-info-%s" (authId.ToString())
 
     let addUser ctx =
-        async {
+        tryId (fun x ->
             let (firstName, lastName) = AspNet.getUserNames ctx
-            use cmd = new StoredProcedures.Track.track.AddUser(Setting.Database.Connection)
-            return! cmd.AsyncExecuteSingle((AspNet.getAuth0Id ctx).ToString(), firstName, lastName, null)
-        }
-        |> Async.StartAsTask
+            use cmd = new DB.track_api.AddUser(Setting.Database.Connection)
+            cmd.AsyncExecuteSingle((AspNet.getAuth0Id ctx).ToString(), firstName, lastName, null) )
 
     let getUserPermissions (authId : AuthId) =
         Cache.tryOrGetAsync (fun x ->
             async {
-                use cmd = new StoredProcedures.Track.track.GetUserInfo(Setting.Database.Connection)
+                use cmd = new DB.track_api.GetUserInfo(Setting.Database.Connection)
                 let! userInfo = cmd.AsyncExecute(authId.ToString())
                 let userInfo = userInfo |> Seq.toList
                 let user =

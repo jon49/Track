@@ -23,11 +23,11 @@ module Client =
 
     let getFriendlyMessageWithValue (validationAttribute : ValidationAttribute, friendlyName, a) =
         match validationAttribute with
-        | :? RequiredAttribute -> sprintf "'%s' value is required." friendlyName
+        | :? RequiredAttribute -> sprintf "'%s' value is required." friendlyName, None
         | _ ->
             match getFriendlyMessage validationAttribute with
-            | Some message -> sprintf "'%s' %s but given '%O'" friendlyName message a
-            | None -> ""
+            | Some message -> sprintf "'%s' %s" friendlyName message, Some a
+            | None -> "", None
             
 
     let getHtmlValidationAttributes (validationAttributes : ValidationAttribute[]) =
@@ -44,7 +44,7 @@ module Client =
             )
             |> List.concat
 
-    let validate2 a =
+    let validate a =
         let properties = a.GetType().GetProperties()
         properties
         |> Array.toList
@@ -60,7 +60,11 @@ module Client =
             | false, None -> Some (RequiredAttribute() :> ValidationAttribute, Reflection.getDisplayName propertyInfo, None)
             | true, None -> None
         )
-        |> List.map getFriendlyMessageWithValue
+        |> List.map (fun x ->
+            let (msg, a) = getFriendlyMessageWithValue x
+            msg, a |> Option.flatten
+        )
         |> function
            | [] -> Ok a
            | xs -> Error xs
+
