@@ -10,6 +10,7 @@ module AspNet =
     open System.Net
     open Giraffe.GiraffeViewEngine
     open System.Threading.Tasks
+    open Utils
 
     let getClaim (ctx : HttpContext) (claim : string) =
         ctx.User.FindFirst(claim)
@@ -37,7 +38,10 @@ module AspNet =
 
     let getForm<'a> (ctx : HttpContext) =
         task {
-            let! a = Controller.getForm<'a> ctx
+        let! a = Controller.getForm<'a> ctx
+        match Reflection.SomeObj a with
+        | true, None -> return Ok a
+        | true, Some _ | false, Some _ ->
             match Client.validate a with
             | Error xs ->
                 ctx.Response.StatusCode <- int HttpStatusCode.BadRequest
@@ -50,22 +54,32 @@ module AspNet =
                                 let object = (str <| string x).ToString()
                                 sprintf " but has value '%s'." object
                             | None -> ""
-                        msg + withValue )
-                return Error <| Errors.ValidationError messages
+                        Errors.ValidationError (msg + withValue) )
+                return Error messages
             | Ok a -> return Ok a
+        | false, None -> return Error [ Errors.ValidationError "Object is required." ]
         }
 
-    // Return  HttpFunc here instead of the xmlnode list to make it more generic
-    let toHttpResult (ctx : HttpContext) f (result : Task<Result<'a, Errors>>) =
+    let toHttpResult (ctx : HttpContext) f (result : Task<Result<'a, Errors list>>) =
         task {
         let! result = result
         match result with
-        | Error (Errors.ValidationError xs) ->
-            ctx.Response.StatusCode <- int HttpStatusCode.BadRequest
-            return xs |> List.map (fun x -> p [] [ rawText x ] )
-        | Error (Errors.DBError xs) ->
-            ctx.Response.StatusCode <- int HttpStatusCode.InternalServerError
-            return xs |> List.map (fun x -> p [] [ rawText x ])
-        | Ok x -> return f x
+        | Error xs ->
+            let errorList =
+                xs
+                |> List.map (
+                    function
+                    | Errors.ValidationError x ->
+                        ctx.Response.StatusCode <- int HttpStatusCode.BadRequest
+                        p [] [ rawText x ]
+                    | Errors.DBError x ->
+                        ctx.Response.StatusCode <- int HttpStatusCode.InternalServerError
+                        p [] [ rawText x ]
+                    | Errors.AuthorizationError ->
+                        ctx.Response.StatusCode <- int HttpStatusCode.Unauthorized
+                        p [] [ rawText "You are not authorized to view this." ]
+                )
+            return! Controller.renderHtml ctx (div [] errorList)
+        | Ok x -> return! f x
         }
             

@@ -3,23 +3,24 @@
 module Repository =
 
     open Track.Repository
+    open Track.User
 
-    let getAll userId =
+    let getAll (UserID.ID userId) =
         tryList (fun () ->
             use cmd = new DB.track_api.GetRegions(conn)
             cmd.AsyncExecute(userId) )
 
-    let update regionId name =
+    let update (RegionID.ID regionId) name =
         tryId (fun () ->
         use cmd = new DB.track_api.EditRegion(conn)
         cmd.AsyncExecute(regionId, name) )
 
-    let add userId regionName =
+    let add (UserID.ID userId) regionName =
         tryId (fun () ->
         use cmd = new DB.track_api.AddRegion(conn)
         cmd.AsyncExecuteSingle(userId, regionName) )
 
-    let getLastest userId =
+    let getLastest (UserID.ID userId) =
         tryId (fun () ->
         use cmd = new DB.track_api.GetRegionLatest(conn)
         cmd.AsyncExecuteSingle(userId) )
@@ -92,16 +93,20 @@ module Controller =
     open Track
     open Track.AspNet
     open Utils
+    open Utils.TaskResult.Symbols
 
-    let indexAction (ctx : HttpContext) (user : Track.User.T) =
+    let indexAction : HtmlFunc =
+        fun ctx user next ->
         Repository.getAll user.UserId
-        |> AspNet.toHttpResult ctx (fun x -> View.index (x |> List.map Map.regionEdit) )
+        |> AspNet.toHttpResult ctx (fun xs -> next (View.index (xs |> List.map Map.regionEdit)) )
 
-    let editRegion id (ctx : HttpContext) (user : Track.User.T) =
-        AspNet.getForm<Region> ctx
-        |> Task.bind (fun x -> Repository.update id x.Name)
-        |> AspNet.toHttpResult ctx (fun xs -> View.index xs)
-        //return AspNet.mapToHtml (fun xs -> View.index xs) result
+    let editRegion regionId : HtmlFunc =
+        fun ctx user next ->
+        let regionId = Task.lift <| user.getRegionId regionId
+        let name = (fun x -> x.Name) <!> (AspNet.getForm<Region> ctx)
+        let result = Repository.update <!> regionId <*> name
+        result
+        |> AspNet.toHttpResult ctx (fun xs -> next (View.index xs))
 
     let regionsController = controller {
         index (htmlPipeline indexAction)

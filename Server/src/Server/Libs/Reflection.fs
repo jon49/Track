@@ -11,9 +11,12 @@ module Reflection =
     open System.ComponentModel.DataAnnotations
     open System.Linq
 
-    let isOption (a : obj) = 
-        let aType = a.GetType()
+    let isTypeOption<'a> () =
+        let aType = typeof<'a>
         aType.IsGenericType && aType.GetGenericTypeDefinition() = typedefof<Option<_>>
+
+    let isOption (a : 'a) = 
+        isTypeOption<'a> ()
 
     let SomeObj (a : obj) =
         let optionType = typedefof<option<_>>

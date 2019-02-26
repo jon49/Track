@@ -10,7 +10,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Settings\Settings.fs" />
-    <Compile Include="Libs\AsyncResult.fs" />
+    <Compile Include="Libs\TaskResult.fs" />
     <Compile Include="Libs\Utils.fs" />
     <Compile Include="Libs\Reflection.fs" />
     <Compile Include="Libs\CustomViewEngine.fs" />

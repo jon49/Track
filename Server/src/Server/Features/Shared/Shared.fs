@@ -27,7 +27,7 @@ module StoredProcedures =
         | ex ->
             use cmd = new DB.track_api.AddLogEntry(conn)
             let! result = cmd.AsyncExecute(ex.Message, ex.ToString())
-            return Error <| Errors.DBError [ "An error occurred and is being looked into." ]
+            return Error [ Errors.DBError "An error occurred and is being looked into." ]
         }
         |> Async.StartAsTask
 
@@ -79,7 +79,7 @@ module User =
                             RegionIds = regions
                             Roles = roles
                             TeamIds = teams
-                            UserId = user.UserId
+                            UserId = UserID.ID user.UserId
                             Type =
                                 match regions.IsEmpty && teams.IsEmpty with
                                 | true -> Authenticated

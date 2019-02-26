@@ -10,12 +10,14 @@ module Pipelines =
     open Track.Repository
     open Saturn
 
-    let htmlPipeline (action : HttpContext -> Track.User.T -> Task<XmlNode list>) (ctx : HttpContext) =
+    type HtmlFunc = HttpContext -> Track.User.T -> (XmlNode list -> Task<HttpContext option>) -> Task<HttpContext option>
+
+    let htmlPipeline (action : HtmlFunc) (ctx : HttpContext) =
         task {
             match! User.getUserPermissions <| AspNet.getAuth0Id ctx with
             | Some user ->
-                let! actionResult = action ctx user
-                return! Controller.renderHtml ctx <| (App.layout user.Type actionResult)
+                let next list = Controller.renderHtml ctx (App.layout user.Type list)
+                return! action ctx user next
             | None -> return! Controller.redirect ctx "/"
         }
 
