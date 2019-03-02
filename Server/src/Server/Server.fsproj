@@ -4,6 +4,10 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors></WarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="test.fsx" />
     <Content Include="Settings\Settings.json">
@@ -35,12 +39,9 @@
     <Compile Include="Features\Pages\Welcome.fs" />
     <Compile Include="Features\Pages\Index.fs" />
     <Compile Include="Features\Coaches\CoachesUrl.fs" />
-    <Folder Include="Features\FirstTime\Sql\" />
-    <Compile Include="Features\FirstTime\FirstTimeModel.fs" />
-    <Compile Include="Features\FirstTime\FirstTimeUrl.fs" />
-    <Compile Include="Features\FirstTime\FirstTimeView.fs" />
-    <Compile Include="Features\FirstTime\FirstTimeController.fs" />
+    <Compile Include="Features\FirstTime\FirstTime.fs" />
     <Compile Include="Features\Regions\Regions.fs" />
+    <Compile Include="Features\Teams\Teams.fs" />
     <Compile Include="Features\Teams\TeamsModel.fs" />
     <Compile Include="Features\Teams\TeamsUrl.fs" />
     <Compile Include="Features\Teams\TeamsViews.fs" />

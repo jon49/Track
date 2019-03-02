@@ -5,6 +5,8 @@
 , @Email nvarchar(256) = NULL
 AS
 
+SET NOCOUNT ON;
+
 DECLARE @Ids AS util.Ids;
 
 IF NOT EXISTS (SELECT * FROM track.[User] t WHERE t.Auth0Id = @Auth0Id)

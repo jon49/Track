@@ -13,6 +13,7 @@ module User =
     type RegionID = ID of int
     type TeamID = ID of int
     type UserID = ID of int
+    type AuthID = ID of string
 
     type Type =
     | Registered
@@ -20,7 +21,7 @@ module User =
     | UnknownUser
 
     type T = {
-        Auth0Id : string
+        AuthId : AuthID
         Email : string option
         FirstName : string
         LastName : string

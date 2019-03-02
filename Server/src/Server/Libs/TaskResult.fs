@@ -2,6 +2,7 @@
 
 // https://fsharpforfunandprofit.com/posts/elevated-world-5/
 open System.Threading.Tasks
+open FSharp.Control.Tasks
 
 type TaskResult<'a, 'b> = Task<Result<'a, 'b>>
 
@@ -91,10 +92,184 @@ module TaskResult =
         | Error err -> return Error err
         }
 
-    //let flatten (result : TaskResult<TaskResult<'a, 'c>, 'c>) : TaskResult<'a, 'c> =
+    [<Sealed>]
+    type TaskResultBuilder () =
+
+        member __.Bind(m : TaskResult<_, _>, f : _ -> TaskResult<_, _>) = bind f m
+        member __.Return(x) = lift x
+        member __.ReturnFrom(x) = x
+        member __.Zero() : TaskResult<unit, 'Error> =
+            __.Return ()
+
+    let taskResult = new TaskResultBuilder()
 
     module Symbols =
 
         let (>>=) x f = bind f x
         let (<*>) = apply
         let (<!>) = map
+
+// https://github.com/jack-pappas/ExtCore/blob/master/ExtCore/Control.fs#L1478
+
+    // 'T -> M<'T>
+//    member (*inline*) __.Return value : TaskResult<'T, 'Error> =
+//        task { return Ok value }
+
+//    // M<'T> -> M<'T>
+//    member (*inline*) __.ReturnFrom (taskResult : TaskResult<'T, 'Error>) =
+//        taskResult
+
+//    // unit -> M<'T>
+//    member inline this.Zero () : TaskResult<unit, 'Error> =
+//        this.Return ()
+
+//    // (unit -> M<'T>) -> M<'T>
+//    //member inline this.Delay (generator : unit -> TaskResult<'T, 'Error>) : TaskResult<'T, 'Error> =
+//    //    Task.
+//    //    Task.Delay generator
+
+//    // M<'T> -> M<'T> -> M<'T>
+//    // or
+//    // M<unit> -> M<'T> -> M<'T>
+//    member (*inline*) __.Combine (r1 : TaskResult<'a, 'Error>, r2 : TaskResult<'b, 'Error>) : TaskResult<'b, 'Error> =
+//        task {
+//        let! r1' = r1
+//        match r1' with
+//        | Error error ->
+//            return Error error
+//        | Ok _ ->
+//            return! r2
+//        }
+
+//    // M<'T> * ('T -> M<'U>) -> M<'U>
+//    member (*inline*) __.Bind (value : TaskResult<'a, 'Error>, binder : 'a -> TaskResult<'b, 'Error>) : TaskResult<'b, 'Error> =
+//        task {
+//        let! value' = value
+//        match value' with
+//        | Error error ->
+//            return Error error
+//        | Ok x ->
+//            return! binder x
+//        }
+
+//    // M<'T> * (exn -> M<'T>) -> M<'T>
+//    member inline __.TryWith (computation : TaskResult<'T, 'Error>, catchHandler : exn -> TaskResult<'T, 'Error>) : TaskResult<'T, 'Error> =
+//        task {
+//        try
+//            return! computation
+//        with
+//        | ex ->
+//            return! (catchHandler ex)
+//        }
+
+//    // M<'T> * (unit -> unit) -> M<'T>
+//    member inline __.TryFinally (computation : TaskResult<'T, 'Error>, compensation : unit -> unit) : TaskResult<'T, 'Error> =
+//        task {
+//        try
+//            return! computation
+//        finally
+//            compensation ()
+//        }
+
+//    // 'T * ('T -> M<'U>) -> M<'U> when 'T :> IDisposable
+//    member inline __.Using (resource : ('T :> System.IDisposable), binder : _ -> TaskResult<'U, 'Error>) : TaskResult<'U, 'Error> =
+//        task {
+//        use r = resource
+//        }
+//        //task.Using (resource, binder)
+
+//    // (unit -> bool) * M<'T> -> M<'T>
+//    member this.While (guard, body : TaskResult<unit, 'Error>) : TaskResult<_,_> =
+//        if guard () then
+//            // OPTIMIZE : This could be simplified so we don't need to make calls to Bind and While.
+//            this.Bind (body, (fun () -> this.While (guard, body)))
+//        else
+//            this.Zero ()
+
+//    // seq<'T> * ('T -> M<'U>) -> M<'U>
+//    // or
+//    // seq<'T> * ('T -> M<'U>) -> seq<M<'U>
+//    member this.For (sequence : seq<_>, body : 'T -> TaskResult<unit, 'Error>) =
+//        // OPTIMIZE : This could be simplified so we don't need to make calls to Using, While, Delay.
+//        this.Using (sequence.GetEnumerator (), fun enum ->
+//            this.While (
+//                enum.MoveNext,
+//                this.Delay (fun () -> body enum.Current)))
+
+//[<Sealed>]
+//type AsyncChoiceBuilder () =
+//    // 'T -> M<'T>
+//    member (*inline*) __.Return value : Async<Choice<'T, 'Error>> =
+//        Choice1Of2 value
+//        |> async.Return
+
+//    // M<'T> -> M<'T>
+//    member (*inline*) __.ReturnFrom (asyncChoice : Async<Choice<'T, 'Error>>) =
+//        asyncChoice
+
+//    // unit -> M<'T>
+//    member inline this.Zero () : Async<Choice<unit, 'Error>> =
+//        this.Return ()
+
+//    // (unit -> M<'T>) -> M<'T>
+//    member inline this.Delay (generator : unit -> Async<Choice<'T, 'Error>>) : Async<Choice<'T, 'Error>> =
+//        async.Delay generator
+
+//    // M<'T> -> M<'T> -> M<'T>
+//    // or
+//    // M<unit> -> M<'T> -> M<'T>
+//    member (*inline*) __.Combine (r1, r2) : Async<Choice<'T, 'Error>> =
+//        async {
+//        let! r1' = r1
+//        match r1' with
+//        | Choice2Of2 error ->
+//            return Choice2Of2 error
+//        | Choice1Of2 () ->
+//            return! r2
+//        }
+
+//    // M<'T> * ('T -> M<'U>) -> M<'U>
+//    member (*inline*) __.Bind (value : Async<Choice<'T, 'Error>>, binder : 'T -> Async<Choice<'U, 'Error>>)
+//        : Async<Choice<'U, 'Error>> =
+//        async {
+//        let! value' = value
+//        match value' with
+//        | Choice2Of2 error ->
+//            return Choice2Of2 error
+//        | Choice1Of2 x ->
+//            return! binder x
+//        }
+
+//    // M<'T> * (exn -> M<'T>) -> M<'T>
+//    member inline __.TryWith (computation : Async<Choice<'T, 'Error>>, catchHandler : exn -> Async<Choice<'T, 'Error>>)
+//        : Async<Choice<'T, 'Error>> =
+//        async.TryWith(computation, catchHandler)
+
+//    // M<'T> * (unit -> unit) -> M<'T>
+//    member inline __.TryFinally (computation : Async<Choice<'T, 'Error>>, compensation : unit -> unit)
+//        : Async<Choice<'T, 'Error>> =
+//        async.TryFinally (computation, compensation)
+
+//    // 'T * ('T -> M<'U>) -> M<'U> when 'T :> IDisposable
+//    member inline __.Using (resource : ('T :> System.IDisposable), binder : _ -> Async<Choice<'U, 'Error>>)
+//        : Async<Choice<'U, 'Error>> =
+//        async.Using (resource, binder)
+
+//    // (unit -> bool) * M<'T> -> M<'T>
+//    member this.While (guard, body : Async<Choice<unit, 'Error>>) : Async<Choice<_,_>> =
+//        if guard () then
+//            // OPTIMIZE : This could be simplified so we don't need to make calls to Bind and While.
+//            this.Bind (body, (fun () -> this.While (guard, body)))
+//        else
+//            this.Zero ()
+
+//    // seq<'T> * ('T -> M<'U>) -> M<'U>
+//    // or
+//    // seq<'T> * ('T -> M<'U>) -> seq<M<'U>>
+//    member this.For (sequence : seq<_>, body : 'T -> Async<Choice<unit, 'Error>>) =
+//        // OPTIMIZE : This could be simplified so we don't need to make calls to Using, While, Delay.
+//        this.Using (sequence.GetEnumerator (), fun enum ->
+//            this.While (
+//                enum.MoveNext,
+//                this.Delay (fun () -> body enum.Current)))
+

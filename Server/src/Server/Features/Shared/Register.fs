@@ -6,6 +6,7 @@ module Register =
     open FSharp.Control.Tasks
     open Track.AspNet
     open Track.Repository
+    open Utils.TaskResult
 
     let user : HttpHandler =
         fun next ctx ->
@@ -15,13 +16,13 @@ module Register =
             | true ->
                 let authId = AspNet.getAuth0Id ctx
                 match! User.getUserPermissions authId with
-                | Some _ -> ()
-                | None ->
+                | Ok _ -> ()
+                | Error _ ->
                     match! User.addUser ctx with
-                    | Some _ ->
+                    | Ok _ ->
                         Cache.remove <| User.cacheKey authId
                         let! _ = User.getUserPermissions authId
                         ()
-                    | None -> ()
+                    | Error _ -> ()
             return! next ctx
         }

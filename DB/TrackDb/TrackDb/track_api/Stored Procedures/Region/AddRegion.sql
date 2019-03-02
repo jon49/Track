@@ -3,6 +3,8 @@
 , @RegionName nvarchar(256)
 AS
 
+SET NOCOUNT ON;
+
 DECLARE @Ids util.Ids;
 
 BEGIN TRANSACTION

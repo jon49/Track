@@ -3,6 +3,8 @@
 , @UserId INT
 AS
 
+SET NOCOUNT ON;
+
 DECLARE @Return TABLE
 ( [Message] varchar(64) NOT NULL
 , HttpCode INT NOT NULL

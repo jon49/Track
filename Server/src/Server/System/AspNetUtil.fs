@@ -11,6 +11,7 @@ module AspNet =
     open Giraffe.GiraffeViewEngine
     open System.Threading.Tasks
     open Utils
+    open Microsoft.Extensions.Primitives
 
     let getClaim (ctx : HttpContext) (claim : string) =
         ctx.User.FindFirst(claim)
@@ -51,7 +52,8 @@ module AspNet =
                         let withValue =
                             match x with
                             | Some x ->
-                                let object = (str <| string x).ToString()
+                                let object =
+                                    x |> string |> str |> renderHtmlNode
                                 sprintf " but has value '%s'." object
                             | None -> ""
                         Errors.ValidationError (msg + withValue) )
@@ -60,26 +62,72 @@ module AspNet =
         | false, None -> return Error [ Errors.ValidationError "Object is required." ]
         }
 
-    let toHttpResult (ctx : HttpContext) f (result : Task<Result<'a, Errors list>>) =
+    let toHtmlErrorResult (ctx : HttpContext) (errors : Errors list) =
+            errors
+            |> List.map (
+                function
+                | Errors.ValidationError x ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.BadRequest
+                    p [ _class "error" ] [ rawText x ]
+                | Errors.DBError x ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.InternalServerError
+                    p [ _class "error" ] [ rawText x ]
+                | Errors.AuthorizationError ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.Forbidden
+                    p [ _class "error" ] [ rawText "You are not authorized to view this." ]
+                | Errors.NotAuthenticated ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.Unauthorized
+                    p [ _class "error" ] [ rawText "User must be authenticated to access this." ]
+                | Errors.NotFound ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.NotFound
+                    p [ _class "error" ] [ rawText "Item not found." ]
+                | Errors.InternalServerError ->
+                    ctx.Response.StatusCode <- int HttpStatusCode.InternalServerError
+                    p [ _class "error" ] [ rawText "Something happened which shouldn't have." ]
+            )
+            |> div []
+            |> renderHtmlNode
+
+    let html (ctx : HttpContext) (result : TaskResult<XmlNode, Errors list>) =
         task {
-        let! result = result
-        match result with
-        | Error xs ->
-            let errorList =
-                xs
-                |> List.map (
-                    function
-                    | Errors.ValidationError x ->
-                        ctx.Response.StatusCode <- int HttpStatusCode.BadRequest
-                        p [] [ rawText x ]
-                    | Errors.DBError x ->
-                        ctx.Response.StatusCode <- int HttpStatusCode.InternalServerError
-                        p [] [ rawText x ]
-                    | Errors.AuthorizationError ->
-                        ctx.Response.StatusCode <- int HttpStatusCode.Unauthorized
-                        p [] [ rawText "You are not authorized to view this." ]
-                )
-            return! Controller.renderHtml ctx (div [] errorList)
-        | Ok x -> return! f x
+        match! result with
+        | Ok x -> return! Controller.renderHtml ctx x
+        | Error errors ->
+            return! Controller.html ctx (toHtmlErrorResult ctx errors)
+        }
+
+    let partial (ctx : HttpContext) (result : TaskResult<XmlNode, Errors list>) =
+        task {
+        match! result with
+        | Ok x ->
+            return! Controller.html ctx <| renderHtmlNode x
+        | Error errors ->
+            return! Controller.html ctx (toHtmlErrorResult ctx errors)
+        }
+
+    let created f (ctx : HttpContext) (location : 'a -> string) (result : TaskResult<_, _>) =
+        task {
+        match! result with
+        | Ok x when f x ->
+            ctx.Response.StatusCode <- int HttpStatusCode.Created
+            ctx.Response.Headers.Add("Location", new StringValues(location x))
+            return! Controller.response ctx ""
+        | Ok _ -> return! Controller.html ctx (toHtmlErrorResult ctx [ Errors.InternalServerError ])
+        | Error errors ->
+            return! Controller.html ctx (toHtmlErrorResult ctx errors)
+        }
+
+    let createdId ctx location success result =
+        success ctx
+        created (fun x -> x > 0) ctx location result
+
+    let noContent (ctx : HttpContext) (result : TaskResult<unit, Errors list>) =
+        task {
+        match! result with
+        | Ok _ ->
+            ctx.Response.StatusCode <- int HttpStatusCode.NoContent
+            return Some ctx
+        | Error errors ->
+            return! Controller.html ctx (toHtmlErrorResult ctx errors)
         }
             

@@ -1,7 +1,7 @@
-﻿namespace Track.Repository 
+﻿namespace Track
 
-open FSharp.Data
-open Track.Settings
+//open FSharp.Data
+//open Track.Settings
 
 
 

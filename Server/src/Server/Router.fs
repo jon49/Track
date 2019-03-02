@@ -4,7 +4,6 @@ open Saturn
 open Giraffe.Core
 open Giraffe.ResponseWriters
 open Track
-open Track.Controller
 
 let browser = pipeline {
     plug (mustAccept ["text/html"; "text/html-partial"])
@@ -33,8 +32,9 @@ let securedRoutes = router {
     pipe_through browser //Use the default browser pipeline
     pipe_through authenticated
 
-    forward "/first-time" FirstTime.coordinator
-    forward "/regions" Regions.Controller.regionsController
+    forward "/first-time" FirstTime.Controller.coordinatorController
+    forward "/regions" Regions.Controller.endpoints
+    forward "/regions" Regions.Controller.customEndpoints
     forward "/teams" Teams.Controller.teamsController
     //forward "/teams" Teams.Controller.teamsCustomEndpoints
 }

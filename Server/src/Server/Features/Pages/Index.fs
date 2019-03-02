@@ -12,14 +12,14 @@ open Track
 let indexLayout (ctx : HttpContext) =
     task {
         let isAuthenticated = AspNet.isAuthenticated ctx
-        let! maybeUser = User.getUserPermissions <| AspNet.getAuth0Id ctx
-        match maybeUser with
-        | None -> return Controller.renderHtml ctx (App.layout User.UnknownUser (Welcome.View User.UnknownUser))
-        | Some user when user.Roles.Contains(User.Role.Coordinator) && not user.RegionIds.IsEmpty ->
+        let! userResult = User.getUserPermissions <| AspNet.getAuth0Id ctx
+        match userResult with
+        | Error _ -> return Controller.renderHtml ctx (App.layout User.UnknownUser (Welcome.View User.UnknownUser))
+        | Ok user when user.Roles.Contains(User.Role.Coordinator) && not user.RegionIds.IsEmpty ->
             return Controller.redirect ctx "/teams"
-        | Some user when user.Roles.Contains(User.Role.Coach) && not user.TeamIds.IsEmpty ->
+        | Ok user when user.Roles.Contains(User.Role.Coach) && not user.TeamIds.IsEmpty ->
             return Controller.redirect ctx <| sprintf "/teams/%i" (Option.defaultValue (Set.maxElement user.TeamIds) user.PreferredTeamId)
-        | Some user ->
+        | Ok user ->
             return Controller.renderHtml ctx (App.layout User.Authenticated (Welcome.View User.Authenticated))
     }
 

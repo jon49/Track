@@ -4,31 +4,50 @@ module Repository =
 
     open Track.Repository
     open Track.User
+    open Track.Settings
+
+    let conn = Setting.Database.Connection
 
     let getAll (UserID.ID userId) =
-        tryList (fun () ->
-            use cmd = new DB.track_api.GetRegions(conn)
-            cmd.AsyncExecute(userId) )
+        async {
+        use cmd = new DB.track_api.GetRegions(conn)
+        let! result = cmd.AsyncExecute(userId)
+        return Seq.toList result
+        }
+        |> list
 
     let update (RegionID.ID regionId) name =
-        tryId (fun () ->
+        async {
         use cmd = new DB.track_api.EditRegion(conn)
-        cmd.AsyncExecute(regionId, name) )
+        return! cmd.AsyncExecuteSingle(regionId, name)
+        }
+        |> single
+
+    let get (RegionID.ID regionId) =
+        async {
+        use cmd = new DB.track_api.GetRegion(conn)
+        return! cmd.AsyncExecuteSingle(regionId)
+        }
+        |> single
 
     let add (UserID.ID userId) regionName =
-        tryId (fun () ->
+        async {
         use cmd = new DB.track_api.AddRegion(conn)
-        cmd.AsyncExecuteSingle(userId, regionName) )
+        return! cmd.AsyncExecuteSingle(userId, regionName)
+        }
+        |> single
 
     let getLastest (UserID.ID userId) =
-        tryId (fun () ->
+        async {
         use cmd = new DB.track_api.GetRegionLatest(conn)
-        cmd.AsyncExecuteSingle(userId) )
+        return! cmd.AsyncExecuteSingle(userId)
+        }
+        |> single
 
 module Model =
     open System.ComponentModel.DataAnnotations
 
-    [<Struct; CLIMutable>]
+    [<CLIMutable>]
     type Region = {
         [<MaxLength(256)>]
         Name : string
@@ -39,77 +58,115 @@ module Model =
     type RegionEdit = {
         Region : Region
         Id : int
-    }
-
-open Model
+    } with
+        static member Create (id, name) =
+            { Region = { Name = name }
+              Id = id }
 
 module Url =
 
     let index = "/regions"
     let show = sprintf "/regions/%i"
     let latest = "/regions/latest"
+    let edit = sprintf "/regions/%i/edit"
 
 module View =
     open Giraffe.GiraffeViewEngine
     open Utils.ViewEngine
     open Utils
-    open Model
     open Utils.UI
+    open Model
 
-    let index (regions : RegionEdit list) =
+    let edit (x : RegionEdit) =
+        form [ _method "post"; _icPostTo (Url.show x.Id) ] [
+            yield! UI.inputText InputSettings.Init x.Region <@ fun x -> x.Name @>
+            yield button [ _type "submit" ] [ rawText "Save" ] ]
+
+    let regionRow =
+        let getRegionShowId = sprintf "region-%i"
+        fun x ->
+        li [ _id (getRegionShowId x.Id) ] [
+            a [ _icGetFrom (Url.edit x.Id) ] [ str x.Region.Name ]
+            button [ _icGetFrom (Url.edit x.Id); _icTarget ("#" + (getRegionShowId x.Id)) ] [ rawText "Edit" ]
+            ]
+
+    let index =
+        fun regions ->
         let regionForms =
-            match List.isEmpty regions with
-            | true -> []
-            | false ->
-                let settings = { InputSettings.Init with AddLabel = false }
-                regions
-                |> List.map (fun x ->
-                    form [ _method "post"; _icPostTo (Url.show x.Id) ] [
-                        yield! UI.inputText settings x.Region <@ fun x -> x.Name @>
-                        yield button [ _type "submit" ] [ rawText "Save" ] ]
-                )
+            regions
+            |> List.map regionRow
         [
         h2 [] [ rawText "Regions" ]
-        div [ _icAppendFrom Url.latest ] regionForms
-        p [] [ rawText "Please enter the name of your new region." ]
-        form [ _method "post"; _icPostTo Url.index ] [
-            yield! UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } Region.Init <@ fun x -> x.Name @>
-            yield button [ _type "submit"; _icAction "parent.reset" ] [ rawText "Submit" ] ]
-        ]
-
-module Map =
-    open Model
-    open Track.Repository
-
-    let regionEdit (region : DB.track_api.GetRegions.Record) =
-        {
-            Region = { Name = region.Name }
-            Id = region.RegionId
-        }
+        ul [ _icAppendFrom Url.latest ] regionForms
+        div [] [
+            p [] [ rawText "Please enter the name of your new region." ]
+            form [ _method "post"; _icPostTo Url.index; _id "new-region" ] [
+                yield! UI.inputText { InputSettings.Init with Attrs = [ _autofocus ]; Label = sprintf "New %s" >> Some } Region.Init <@ fun x -> x.Name @>
+                yield button [ _type "submit"; _icSuccessAction "[0]reset"; _icActionTarget "#new-region"  ] [ rawText "Submit" ] ]
+            ]]
 
 module Controller =
     open Saturn
-    open Microsoft.AspNetCore.Http
     open Track
     open Track.AspNet
     open Utils
-    open Utils.TaskResult.Symbols
+    open Utils.TaskResult
+    open Utils.ViewEngine
+    open Model
+    open Track.Repository
 
-    let indexAction : HtmlFunc =
-        fun ctx user next ->
-        Repository.getAll user.UserId
-        |> AspNet.toHttpResult ctx (fun xs -> next (View.index (xs |> List.map Map.regionEdit)) )
+    let indexAction : UserContext =
+        fun user ctx ->
+        taskResult {
+        let! regions = Repository.getAll user.UserId
+        return App.layout user.Type (View.index (regions |> List.map (fun x -> RegionEdit.Create(x.RegionId, x.Name))))
+        }
+        |> AspNet.html ctx
 
-    let editRegion regionId : HtmlFunc =
-        fun ctx user next ->
-        let regionId = Task.lift <| user.getRegionId regionId
-        let name = (fun x -> x.Name) <!> (AspNet.getForm<Region> ctx)
-        let result = Repository.update <!> regionId <*> name
-        result
-        |> AspNet.toHttpResult ctx (fun xs -> next (View.index xs))
+    let updateRegion regionId : UserContext =
+        fun user ctx ->
+        taskResult {
+        let! regionId = Task.lift <| user.getRegionId regionId
+        let! region = AspNet.getForm<Region> ctx
+        let! result = Repository.update regionId region.Name
+        return View.regionRow (RegionEdit.Create (result.RegionId, result.Name))
+        }
+        |> AspNet.partial ctx
 
-    let regionsController = controller {
-        index (htmlPipeline indexAction)
-        edit (fun ctx id -> htmlPipeline (editRegion id) ctx)
+    let editRegion regionId : UserContext =
+        fun user ctx ->
+        taskResult {
+        let! regionId = Task.lift <| user.getRegionId regionId
+        let! region = Repository.get regionId
+        return View.edit (RegionEdit.Create (region.RegionId, region.Name))
+        }
+        |> AspNet.partial ctx
+
+    let addRegion : UserContext =
+        fun user ctx ->
+        taskResult {
+        let! region = AspNet.getForm<Region> ctx
+        let! added = Repository.add user.UserId region.Name
+        User.reset user
+        return added
+        }
+        |> AspNet.createdId ctx Url.show (fun ctx -> Header.resetForm ctx "#new-region")
+
+    let latestRegion (user: User.T) ctx =
+        taskResult {
+        let! region = Repository.getLastest user.UserId
+        return View.regionRow (RegionEdit.Create (region.RegionId, region.Name))
+        }
+        |> AspNet.partial ctx
+
+    let customEndpoints = router {
+        get "/latest" (userContextFunc latestRegion)
+    }
+
+    let endpoints = controller {
+        index (userContext indexAction)
+        update (fun ctx id -> userContext (updateRegion id) ctx)
+        edit (fun ctx id -> userContext (editRegion id) ctx)
+        create (userContext addRegion)
     }
 

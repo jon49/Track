@@ -11,11 +11,11 @@ module UI =
     [<Struct>]
     type InputSettings = {
         Attrs : seq<XmlAttribute>
-        AddLabel : bool
+        Label : string -> string option
     } with
         static member Init = {
             Attrs = []
-            AddLabel = true
+            Label = Option.Some
         }
 
     let radio name (a : 'a) (expr : Expr<'a -> int>) attrs =
@@ -38,13 +38,13 @@ module UI =
         let required = not <| Reflection.isOption value
         let displayName = getDisplayName pi
         let validationAttributes = Reflection.getCustomAttributes<ValidationAttribute> pi
-        let friendlyMessage = Client.getFriendlyMessage validationAttributes
+        let friendlyMessage = Client.getFriendlyMessages validationAttributes
         let validationAttributes = Client.getHtmlValidationAttributes validationAttributes
 
         let label =
-            if settings.AddLabel then
-                label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
-            else GiraffeViewEngine.emptyText
+            match settings.Label displayName with
+            | Some displayName -> label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
+            | None -> GiraffeViewEngine.emptyText
 
         [
         label

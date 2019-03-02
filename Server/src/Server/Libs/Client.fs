@@ -50,12 +50,12 @@ module Client =
         |> Array.toList
         |> List.choose (fun propertyInfo ->
             let validationAttributes = Reflection.getCustomAttributes<ValidationAttribute> propertyInfo
-            let value = Reflection.getValue propertyInfo
-            match Reflection.SomeObj value with
+            let value = Reflection.getValue propertyInfo a
+            match Reflection.isOption a, Option.ofObj value with
             | true, Some value
             | false, Some value ->
                 validationAttributes
-                |> Array.tryFind ( fun x -> x.IsValid(value) )
+                |> Array.tryFind ( fun x -> not <| x.IsValid(value) )
                 |> Option.map (fun x -> x, Reflection.getDisplayName propertyInfo, Some value )
             | false, None -> Some (RequiredAttribute() :> ValidationAttribute, Reflection.getDisplayName propertyInfo, None)
             | true, None -> None

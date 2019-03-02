@@ -3,22 +3,21 @@
 [<AutoOpen>]
 module Pipelines =
     open Microsoft.AspNetCore.Http
-    open System.Threading.Tasks
-    open Giraffe.GiraffeViewEngine
     open FSharp.Control.Tasks
     open Track.AspNet
     open Track.Repository
     open Saturn
+    open System.Threading.Tasks
+    open Giraffe
 
-    type HtmlFunc = HttpContext -> Track.User.T -> (XmlNode list -> Task<HttpContext option>) -> Task<HttpContext option>
+    type UserContext = User.T -> HttpContext -> Task<HttpContext option>
 
-    let htmlPipeline (action : HtmlFunc) (ctx : HttpContext) =
+    let userContext (action : UserContext) (ctx : HttpContext) =
         task {
             match! User.getUserPermissions <| AspNet.getAuth0Id ctx with
-            | Some user ->
-                let next list = Controller.renderHtml ctx (App.layout user.Type list)
-                return! action ctx user next
-            | None -> return! Controller.redirect ctx "/"
+            | Ok user -> return! action user ctx
+            | Error _ -> return! Controller.redirect ctx "/"
         }
 
-
+    let userContextFunc action : HttpHandler =
+        fun _ ctx -> userContext action ctx

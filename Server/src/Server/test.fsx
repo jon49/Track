@@ -1,69 +1,50 @@
-﻿
-let (>=>) switch1 switch2 x = 
-    match switch1 x with
-    | Ok s -> switch2 s
-    | Error f -> Error f 
+﻿open System
+let strToInt s =
+    match Int32.TryParse(s) with
+    | true, x -> Some x
+    | false, _ -> None
 
-let map f xResult =
-    match xResult with
-    | Ok x ->
-        Ok (f x)
-    | Error errs ->
-        Error errs
+type MaybeBuilder() =
+    member this.Bind(m, f) =
+        match m with
+        | Some m -> f m
+        | None -> None
+        //Option.bind f m
+    member this.Return(x) = Some x
+    member this.ReturnFrom(x) = x
 
-let lift x =
-    Ok x
+let maybe = MaybeBuilder()
 
-let apply fResult xResult =
-    match fResult,xResult with
-    | Ok f, Ok x ->
-        Ok (f x)
-    | Error errs, Ok x ->
-        Error errs
-    | Ok f, Error errs ->
-        Error errs
-    | Error errs1, Error errs2 ->
-        Error (List.concat [errs1; errs2])
-
-let bind f xResult =
-    match xResult with
-    | Ok x ->
-        f x
-    | Error errs ->
-        Error errs
-
-type CustomerId = CustomerId of int
-type EmailAddress = EmailAddress of string
-
-let createCustomerId id =
-    if id > 0 then
-        Ok (CustomerId id)
-    else
-        Error ["CustomerId must be positive"]
-// int -> Result<CustomerId>
-
-let createEmailAddress str =
-    if System.String.IsNullOrEmpty(str) then
-        Error ["Email must not be empty"]
-    elif str.Contains("@") then
-        Ok (EmailAddress str)
-    else
-        Error ["Email must contain @-sign"]
-
-type CustomerInfo = {
-    id: CustomerId
-    //name: string  // New!
-    email: EmailAddress
+let t =
+    maybe {
+    return 2
     }
 
-let createCustomer customerId email =
-    { id=customerId;  email=email }
+let t2 =
+    maybe {
+    return! Some 3
+    }
 
-let (<!>) = map
-let (<*>) = apply
+let stringAddWorkflow x y z =
+    maybe {
+    let! a = strToInt x
+    let! b = strToInt y
+    let! c = strToInt z
+    return a + b + c
+    }
 
-let createCustomerResultA id email =
-    let idResult = createCustomerId id
-    let emailResult = createEmailAddress email
-    createCustomer <!> idResult <*> emailResult
+let good = stringAddWorkflow "12" "3" "2"
+let bad = stringAddWorkflow "12" "xyz" "2"
 
+let strAdd str i =
+    match strToInt str with
+    | Some x -> Some <| i + x
+    | None -> None
+
+let (>>=) m f =
+    match m with
+    | Some x -> f x
+    | None -> None
+
+let good2 = strToInt "1" >>= strAdd "2" >>= strAdd "3"
+let bad2 = strToInt "1" >>= strAdd "xyz" >>= strAdd "3"
