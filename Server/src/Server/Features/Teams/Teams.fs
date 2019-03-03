@@ -72,3 +72,12 @@ module Url =
     let edit = sprintf "/teams/%i/edit"
 
 module View =
+
+    open Giraffe.GiraffeViewEngine
+    open Utils
+    open Model
+
+    let show (team : TeamEdit) =
+        article [ _class Class.P.card ] [
+            p [] [ str team.Team.Name ]
+            UI.editButton (Url.edit team.Id) None ]

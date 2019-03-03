@@ -38,22 +38,21 @@
     <Compile Include="Features\Accounts\AccountsController.fs" />
     <Compile Include="Features\Pages\Welcome.fs" />
     <Compile Include="Features\Pages\Index.fs" />
-    <Compile Include="Features\Coaches\CoachesUrl.fs" />
+    <Compile Include="Features\Coaches\Coaches.fs" />
     <Compile Include="Features\FirstTime\FirstTime.fs" />
-    <Compile Include="Features\Regions\Regions.fs" />
     <Compile Include="Features\Teams\Teams.fs" />
-    <Compile Include="Features\Teams\TeamsModel.fs" />
     <Compile Include="Features\Teams\TeamsUrl.fs" />
     <Compile Include="Features\Teams\TeamsViews.fs" />
     <Compile Include="Features\Teams\TeamsRepository.fs" />
     <Compile Include="Features\Teams\TeamsController.fs" />
+    <Compile Include="Features\Regions\Regions.fs" />
     <Compile Include="Router.fs" />
     <Compile Include="Program.fs" />
 
     <Content Include="static\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="*.sqlite">
+    <Content Include="static\images\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

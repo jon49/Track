@@ -39,6 +39,19 @@ module Result =
 module Task = 
     open FSharp.Control.Tasks
     open System.Threading.Tasks
+    open System.IO
+    open System.Threading
+    open System.Threading.Tasks
+
+    type T () =
+        static member Parallel(a : unit -> Task<'a>, b : unit -> Task<'b>) =
+            task {
+            let a' = Task.Run<'a>(a)
+            let b' = Task.Run<'b>(b)
+            let! a'' = a'
+            let! b'' = b'
+            return a'', b''
+            }
 
     let apply (fTask : Task<'a -> 'b>) (xTask : Task<'a>) =
         task {
@@ -66,6 +79,17 @@ module Task =
 
 module TaskResult =
     open FSharp.Control.Tasks
+    open Giraffe
+
+    type T () =
+        static member Parallel(a, b) =
+            task {
+            let! a', b' = Task.T.Parallel(a, b)
+            match a', b' with
+            | Error errorA, Error errorB -> return Error <| errorA @ errorB
+            | Error error, _ | _, Error error -> return Error error
+            | Ok a, Ok b -> return Ok (a, b)
+            }
 
     let map (f : 'a -> 'b) (result : TaskResult<'a, 'c>) : TaskResult<'b, 'c> = 
         task {
@@ -95,11 +119,23 @@ module TaskResult =
     [<Sealed>]
     type TaskResultBuilder () =
 
-        member __.Bind(m : TaskResult<_, _>, f : _ -> TaskResult<_, _>) = bind f m
-        member __.Return(x) = lift x
-        member __.ReturnFrom(x) = x
-        member __.Zero() : TaskResult<unit, 'Error> =
+        member __.Bind (m : TaskResult<_, _>, f : _ -> TaskResult<_, _>) = bind f m
+        member __.Return (x) = lift x
+        member __.ReturnFrom (x) = x
+        member __.Zero () : TaskResult<unit, 'Error> =
             __.Return ()
+        member __.Delay (generator : unit -> TaskResult<'T, 'Error>) =
+            generator
+        member __.Run (f) = f()
+        member __.Combine (r1 : TaskResult<_,_>, r2 : TaskResult<_,_>) : TaskResult<'T, 'Error> =
+            task {
+            let! r1' = r1
+            match r1' with
+            | Error error ->
+                return Error error
+            | Ok () ->
+            return! r2
+            }
 
     let taskResult = new TaskResultBuilder()
 

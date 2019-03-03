@@ -1,5 +1,24 @@
 ﻿namespace Utils
 
+module Class = 
+    open Giraffe.GiraffeViewEngine
+
+    let join xs = xs |> String.concat " "
+
+    [<Literal>]
+    let revealIfActive = "reveal-if-active"
+    [<Literal>]
+    let denude = "denude"
+
+    /// Picnic CSS Classes
+    module P =
+        [<Literal>]
+        let flex = "flex"
+        [<Literal>]
+        let card = "card"
+        [<Literal>]
+        let logo = "logo"
+
 module UI =
     open Reflection
     open Giraffe.GiraffeViewEngine
@@ -62,8 +81,11 @@ module UI =
 
     let inputEmail  expr attrs = input "email" expr attrs
 
-module Class = 
-
-    [<Literal>]
-    let revealIfActive = "reveal-if-active"
+    let editButton editUrl targetId =
+        let targetId =
+            targetId
+            |> Option.map(fun x -> _icTarget <| "#" + x)
+            |> Option.defaultValue _empty
+        button [ _class (Class.join [| Class.denude; Class.P.logo |]); _icGetFrom editUrl; targetId ]
+            [ img [ _alt "Edit"; _src "/images/edit.svg" ] ]
 

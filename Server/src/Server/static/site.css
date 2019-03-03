@@ -1,5 +1,5 @@
 
-:root {
+/*:root {
   --color-main: #FFF;
   --color-accent: #B3AA94;
   --color-neutral: #EEE;
@@ -197,4 +197,4 @@ input:valid {
 input:invalid {
   border-color: var(--color-error);
   box-shadow: 0 0 10px var(--color-error);
-}
+}*/

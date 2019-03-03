@@ -4,10 +4,10 @@ open Giraffe.GiraffeViewEngine
 open Utils.ViewEngine
 open Track.User
 
-let layout userType (content: XmlNode list) =
+let layout user (content: XmlNode list) =
 
     let authenticatedNavigation =
-        match userType with
+        match user |> Option.map (fun x -> x.Type) |> Option.defaultValue UnknownUser with
         | Registered | Authenticated ->
             li [ _id "btn-logout" ] [ button [ _icPostTo "/logout" ] [ rawText "Logout" ] ]
         | UnknownUser ->
@@ -18,6 +18,7 @@ let layout userType (content: XmlNode list) =
             meta [_charset "utf-8"]
             meta [_name "viewport"; _content "width=device-width, initial-scale=1.0" ]
             title [] [ rawText "Track" ]
+            link [ _rel "stylesheet"; _href "https://unpkg.com/picnic" ]
             link [ _href "/site.css"; _rel "stylesheet" ]
         ]
         body [] [

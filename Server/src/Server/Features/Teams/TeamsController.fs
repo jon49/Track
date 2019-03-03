@@ -6,7 +6,6 @@ module Controller =
     open Saturn
     open Giraffe
     open FSharp.Control.Tasks
-    open Model
     open Utils.ViewEngine
     open Utils.Client
     open Giraffe
@@ -14,7 +13,7 @@ module Controller =
 
     let indexAction (ctx : HttpContext) =
         task {
-            return (App.layout User.Type.Authenticated [ GiraffeViewEngine.p [] [ GiraffeViewEngine.rawText "Hello!" ] ])
+            return [] // (App.layout User.Type.Authenticated [ GiraffeViewEngine.p [] [ GiraffeViewEngine.rawText "Hello!" ] ])
             //match! Repository.all () with
             //| Ok result ->
             //    return App.layout layoutOptions <| View.all result
