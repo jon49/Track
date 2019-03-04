@@ -3,9 +3,6 @@
 module ViewEngine =
 
     open Giraffe.GiraffeViewEngine
-    open Microsoft.FSharp.Quotations
-    open Reflection
-    open Giraffe
 
     let str = encodedText
 
@@ -19,6 +16,7 @@ module ViewEngine =
     let _icAppendFrom = attr "ic-append-from"
     let _icSrc = attr "ic-src"
     let _icDeps = attr "ic-deps"
+    let _icIndicator = attr "ic-indicator"
 
     // Custom
     let _empty = flag ""

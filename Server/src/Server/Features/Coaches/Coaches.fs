@@ -11,7 +11,11 @@ module Model =
         LastName : string
         [<Display(Name = "Email"); EmailAddress; StringLength(256, MinimumLength = 1)>]
         Email : string
-    }
+    } with
+        static member Init =
+            { FirstName = ""
+              LastName = ""
+              Email = "" }
 
     [<CLIMutable>]
     type CoachEdit = {
@@ -28,8 +32,6 @@ module Model =
                 Email = Option.defaultValue "" email }
             }
 
-open Model
-
 module Url =
 
     let index = "/coaches"
@@ -40,6 +42,7 @@ module Url =
 module View =
     open Giraffe.GiraffeViewEngine
     open Utils
+    open Model
 
     let show hasBeenVerified (coach : CoachEdit) =
         let coachId = coach.Id
@@ -51,7 +54,7 @@ module View =
             else
                 let message =  "The coach has NOT been verified."
                 img [ _alt message; _src "/images/slash.svg"; _title message ]
-        article [ _class Class.P.card ] [
+        article [] [
             p [] [ str <| sprintf "%s %s" coach.FirstName coach.LastName ]
             p [] [ str coach.Email; verified ]
             UI.editButton (Url.edit coachId) None ]

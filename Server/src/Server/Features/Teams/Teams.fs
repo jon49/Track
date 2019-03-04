@@ -50,7 +50,7 @@ module Model =
 
     [<CLIMutable>]
     type Team = {
-        [<MaxLength(256)>]
+        [<Display(Name = "Team Name"); MaxLength(256)>]
         Name : string
     } with
         static member Init = { Name = "" }
@@ -76,8 +76,10 @@ module View =
     open Giraffe.GiraffeViewEngine
     open Utils
     open Model
+    open Utils.ViewEngine
+    open Utils.UI
 
     let show (team : TeamEdit) =
-        article [ _class Class.P.card ] [
+        article [ _class (Class.M.Col.md_ 6) ] [
             p [] [ str team.Team.Name ]
             UI.editButton (Url.edit team.Id) None ]

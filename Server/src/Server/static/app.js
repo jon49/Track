@@ -8,7 +8,8 @@
 
 $(document)
     .on("beforeAjaxSend.ic", function (evt, settings) {
-        settings.xhrFields = { withCredentials: true };
+        $('form.disabled').attr('disabled', true)
+        settings.xhrFields = { withCredentials: true }
     })
     //.on('success.ic', function (event, elt, _, __, xhr, ___) {
     //    var trigger = "X-IC-Trigger";
@@ -20,6 +21,9 @@ $(document)
     //    }
     //})
     .on('resetForm', function (event, target) {
-        $(target).get()[0].reset();
+        var $form = $(target)
+        $form.get()[0].reset()
+        var $submit = $form.find('[type="submit"]')
+        $submit.attr('disabled', false)
     });
 

@@ -48,7 +48,6 @@
     <Compile Include="Features\Regions\Regions.fs" />
     <Compile Include="Router.fs" />
     <Compile Include="Program.fs" />
-
     <Content Include="static\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

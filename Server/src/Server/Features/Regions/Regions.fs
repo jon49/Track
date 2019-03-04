@@ -99,6 +99,13 @@ module Url =
     let latest = "/regions/latest"
     let edit = sprintf "/regions/%i/edit"
 
+    module Team =
+        let index = sprintf "/regions/%i/teams"
+        let add = sprintf "/regions/%i/teams/add"
+
+    module Coach =
+        let add = sprintf "/regions/%i/coaches/add"
+
 module View =
     open Giraffe.GiraffeViewEngine
     open Utils.ViewEngine
@@ -109,37 +116,72 @@ module View =
     open Track
     open Track.Teams.Model
     open Track.Coaches.Model
+    open Giraffe
+
+    module M = Utils.Class.M
+
+    let regionAttrId = sprintf "region-%i"
+
+    let addCoach (RegionID.ID regionId) =
+        let coach = Coach.Init
+        let addAnotherCoachId = "add-another-coach"
+        [
+        yield! UI.inputText InputSettings.Init coach <@ fun x -> x.FirstName @>
+        yield! UI.inputText InputSettings.Init coach <@ fun x -> x.LastName @>
+        yield! UI.inputEmail InputSettings.Init coach <@ fun x -> x.Email @>
+        yield button [ _id addAnotherCoachId; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId) ] [ rawText "Add Another Coach" ]
+        ]
+
+    let addTeam regionID =
+        let (RegionID.ID regionId) = regionID
+        let team = Team.Init
+        div [ _class M.row; ] [
+            label [ _class (M.button + M.Color.primary + M.Col.sm); _for "add-team-modal" ] [ rawText "Add Another Team" ]
+            GiraffeViewEngine.input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class "modal" ]
+            div [ Accessibility._roleDialog; Accessibility._ariaLabelledBy "add-team-title" ] [
+                div [ _style "margin:auto;" ] [
+                    form [ _method "post"; _icPostTo (Url.Team.index regionId); _class (M.container + M.section) ] [
+                        h3 [ _id "add-team-title" ] [ rawText "New Team" ]
+                        fieldset [ _class M.row ] [
+                            div [ _class M.Col.sm ] <| UI.inputText InputSettings.Init team <@ fun x -> x.Name @>
+                            div [ _id "add-coaches"; _class M.Col.sm ] (addCoach regionID) ]
+                        div [ _class M.container ] [
+                            div [ _class M.row ] [
+                                div [ _class (M.Col.sm_ 1) ] [
+                                    label [ _class (M.button + M.Color.secondary); _for "add-team-modal" ] [ rawText "Cancel" ] ]
+                                div [ _class (M.Col.sm_ 1) ] [
+                                    button [ _type "reset"; _class M.Color.secondary; ] [ rawText "Reset" ] ]
+                                div [ _class (M.Col.offset_sm 9) ] [
+                                    button [ _type "submit"; _class (M.Color.primary) ] [ rawText "Add Team" ] ] ]
+                            ] ] ] ] ]
 
     let edit (x : RegionEdit) =
-        form [ _method "post"; _icPostTo (Url.show x.Id) ] [
+        form [ _method "post"; _icPostTo (Url.show x.Id); _icTarget ((+) "#" <| regionAttrId x.Id); ] [
             yield! UI.inputText InputSettings.Init x.Region <@ fun x -> x.Name @>
             yield button [ _type "submit" ] [ rawText "Save" ] ]
 
-    let regionRow (x : RegionEdit) =
-        let regionShowId = sprintf "region-%i" x.Id
-        header [ _id regionShowId ] [
-            h2 [] [ str x.Region.Name ]
-            UI.editButton (Url.edit x.Id) (Some <| regionShowId) ]
+    let regionRow regionAttrId (x : RegionEdit) =
+        h2 [] [ str x.Region.Name; UI.editButton (Url.edit x.Id) (Some regionAttrId) ]
 
     let show (RegionID.ID regionId) (regions : RegionEdit list) (teams : (TeamEdit * (bool * CoachEdit) list) list) =
         let region = regions |> List.find (fun x -> x.Id = regionId)
+        let regionAttrId = regionAttrId region.Id
         [
-        regionRow region
-        article [ _class Class.P.card ] [
-            header [ _class <| Class.join [| Class.P.flex |] ] [
-                h3 [] [ rawText "Teams" ]
-                h3 [] [ rawText "Coaches" ] ]
-            div [ _class Class.P.flex ] (
-                teams
-                |> List.map (fun (team, coaches) ->
-                    div [ _class Class.P.card ] [
-                        Teams.View.show team
-                        div [] (coaches |> List.map (fun x -> x ||> Coaches.View.show))
-                    ]
-                ))
+        div [ _id regionAttrId ] [ regionRow regionAttrId region ]
+        article [ _class M.container ] [
+                yield div [ _class M.row ] [
+                    h3 [ _class M.Col.sm ] [ rawText "Teams" ]
+                    h3 [ _class M.Col.sm ] [ rawText "Coaches" ] ]
+                yield!  teams
+                        |> List.map (fun (team, coaches) ->
+                            div [ _class M.row ] [
+                                Teams.View.show team
+                                div [ _class (M.Col.md_ 6) ] (coaches |> List.map (fun x -> x ||> Coaches.View.show))
+                            ]
+                        )
+                yield div [ _class M.row; _id "add-team-button" ] [
+                    button [ _class (M.Color.primary + M.Col.sm); _icGetFrom (Url.Team.add regionId); _icTarget "#add-team-button" ] [ rawText "Add Team" ] ] ]
         ]
-        ]
-
 
     let index =
         div []
@@ -207,7 +249,7 @@ module Controller =
         let! regionId = Task.lift <| user.getRegionId regionId
         let! region = AspNet.getForm<Region> ctx
         let! result = Repository.update regionId region.Name
-        return View.regionRow (RegionEdit.Create (result.RegionId, result.Name))
+        return View.regionRow (View.regionAttrId result.RegionId) (RegionEdit.Create (result.RegionId, result.Name))
         }
         |> AspNet.partial ctx
 
@@ -233,15 +275,27 @@ module Controller =
     let latestRegion (user: User.T) ctx =
         taskResult {
         let! region = Repository.getLastest user.UserId
-        return View.regionRow (RegionEdit.Create (region.RegionId, region.Name))
+        return View.regionRow (View.regionAttrId region.RegionId) (RegionEdit.Create (region.RegionId, region.Name))
         }
         |> AspNet.partial ctx
+
+    let addTeam regionId : UserContext =
+        fun user ctx ->
+        taskResult {
+        let! regionId = Task.lift <| user.getRegionId regionId
+        return View.addTeam regionId
+        } |> AspNet.partial ctx
 
     let customEndpoints = router {
         get "/latest" (userContextFunc latestRegion)
     }
 
+    let subEndpoints regionId = controller {
+        add (userContext (addTeam regionId))
+    }
+
     let endpoints = controller {
+        subController "/teams" subEndpoints
         index (userContext indexAction)
         show (fun ctx id -> userContext (showRegion id) ctx)
         update (fun ctx id -> userContext (updateRegion id) ctx)

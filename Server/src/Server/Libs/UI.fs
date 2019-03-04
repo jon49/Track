@@ -6,18 +6,89 @@ module Class =
     let join xs = xs |> String.concat " "
 
     [<Literal>]
-    let revealIfActive = "reveal-if-active"
-    [<Literal>]
-    let denude = "denude"
+    let revealIfActive = "reveal-if-active "
 
-    /// Picnic CSS Classes
-    module P =
+    [<Literal>]
+    let backgroundNone = "bg-none "
+
+    /// Mini CSS
+    module M =
         [<Literal>]
-        let flex = "flex"
+        let container = "container "
         [<Literal>]
-        let card = "card"
+        let row = "row "
         [<Literal>]
-        let logo = "logo"
+        let logo = "logo "
+        [<Literal>]
+        let button = "button "
+        [<Literal>]
+        let card = "card "
+        [<Literal>]
+        let section = "section "
+
+        module Color =
+            [<Literal>]
+            let primary = "primary "
+
+            [<Literal>]
+            let secondary = "secondary "
+            
+
+        module Animation =
+
+            [<Literal>]
+            let spinner = "spinner "
+
+        module Icon =
+            [<Literal>]
+            let alert = "icon-alert "
+            [<Literal>]
+            let bookmark = "icon-bookmark "
+            [<Literal>]
+            let calendar = "icon-calendar "
+            [<Literal>]
+            let cart = "icon-cart "
+            [<Literal>]
+            let credit = "icon-credit "
+            [<Literal>]
+            let edit = "icon-edit "
+            [<Literal>]
+            let help = "icon-help "
+            [<Literal>]
+            let home = "icon-home "
+            [<Literal>]
+            let info = "icon-info "
+            [<Literal>]
+            let link = "icon-link "
+            [<Literal>]
+            let location = "icon-location "
+            [<Literal>]
+            let lock = "icon-lock "
+            [<Literal>]
+            let mail = "icon-mail "
+            [<Literal>]
+            let phone = "icon-phone "
+            [<Literal>]
+            let rss = "icon-rss "
+            [<Literal>]
+            let search = "icon-search "
+            [<Literal>]
+            let settings = "icon-settings "
+            [<Literal>]
+            let share = "icon-share "
+            [<Literal>]
+            let upload = "icon-upload "
+            [<Literal>]
+            let user = "icon-user "
+
+        module Col =
+            [<Literal>]
+            let md = "col-md "
+            let md_ = sprintf "col-md-%i "
+            [<Literal>]
+            let sm = "col-sm "
+            let offset_sm = sprintf "col-sm-offset-%i "
+            let sm_ = sprintf "col-sm-%i "
 
 module UI =
     open Reflection
@@ -26,6 +97,7 @@ module UI =
     open Microsoft.FSharp.Quotations
     open System.ComponentModel.DataAnnotations
     open Giraffe
+    module M = Class.M
 
     [<Struct>]
     type InputSettings = {
@@ -77,15 +149,19 @@ module UI =
             yield! validationAttributes ]
         ]
 
-    let inputText expr attrs = input "text" expr attrs
+    let inputText expr a = input "text" expr a
 
-    let inputEmail  expr attrs = input "email" expr attrs
+    let inputEmail  expr a = input "email" expr a
 
     let editButton editUrl targetId =
-        let targetId =
+        let target =
             targetId
             |> Option.map(fun x -> _icTarget <| "#" + x)
             |> Option.defaultValue _empty
-        button [ _class (Class.join [| Class.denude; Class.P.logo |]); _icGetFrom editUrl; targetId ]
-            [ img [ _alt "Edit"; _src "/images/edit.svg" ] ]
+                
+        span [] [
+            a [ _icGetFrom editUrl; target; _class (M.button + Class.backgroundNone); _icIndicator "#edit-spinner" ] [
+                span [ _class M.Icon.edit ] [] ]
+            span [ _id "edit-spinner"; _class M.Animation.spinner; _style "display:none;" ] []
+        ]
 
