@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [track_api].[EditTeam]
+﻿CREATE PROCEDURE [track_api].[UpdateTeam]
   @TeamId int
 , @Name nvarchar(256)
 AS

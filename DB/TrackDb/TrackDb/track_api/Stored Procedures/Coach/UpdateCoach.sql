@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[EditCoach]
+﻿CREATE PROCEDURE [dbo].[UpdateCoach]
     @param1 int = 0,
     @param2 int
 AS

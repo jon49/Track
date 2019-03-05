@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [track_api].[NewCoach]
+﻿CREATE PROCEDURE [track_api].[CreateCoach]
   @TempGuidId UNIQUEIDENTIFIER
 , @UserId INT
 AS

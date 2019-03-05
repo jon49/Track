@@ -54,7 +54,7 @@ module Repository =
         let addUser ctx =
             async {
                 let (firstName, lastName) = AspNet.getUserNames ctx
-                use cmd = new DB.track_api.AddUser(Setting.Database.Connection)
+                use cmd = new DB.track_api.CreateUser(Setting.Database.Connection)
                 return! cmd.AsyncExecuteSingle((AspNet.getAuth0Id ctx).ToString(), firstName, lastName, null)
             }
             |> single

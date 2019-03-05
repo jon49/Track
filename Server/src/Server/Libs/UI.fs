@@ -3,13 +3,14 @@
 module Class = 
     open Giraffe.GiraffeViewEngine
 
-    let join xs = xs |> String.concat " "
-
     [<Literal>]
     let revealIfActive = "reveal-if-active "
-
     [<Literal>]
     let backgroundNone = "bg-none "
+    [<Literal>]
+    let moveRight = "move-right "
+    [<Literal>]
+    let scrollable = "scrollable "
 
     /// Mini CSS
     module M =
@@ -25,6 +26,14 @@ module Class =
         let card = "card "
         [<Literal>]
         let section = "section "
+
+        module Form =
+            [<Literal>]
+            let inputGroup = "input-group "
+            [<Literal>]
+            let vertical = "vertical "
+            [<Literal>]
+            let fluid = "fluid "
 
         module Color =
             [<Literal>]
@@ -134,20 +143,19 @@ module UI =
 
         let label =
             match settings.Label displayName with
-            | Some displayName -> label [ _for pi.Name; _title friendlyMessage ] [ rawText displayName ]
+            | Some displayName -> label [ _for pi.Name; _title friendlyMessage; _style "order:-1;" ] [ rawText displayName ]
             | None -> GiraffeViewEngine.emptyText
 
-        [
-        label
-        input [
-            yield _type ``type``
-            yield _value <| string value
-            yield _name pi.Name
-            yield _id pi.Name
-            yield! (if required then [ _required; _placeholder "Required" ] else [ _empty ])
-            yield! settings.Attrs
-            yield! validationAttributes ]
-        ]
+        div [ _class (M.Form.inputGroup + M.Form.vertical) ] [
+            input [
+                yield _type ``type``
+                yield _value <| string value
+                yield _name pi.Name
+                yield _id pi.Name
+                yield! (if required then [ _required; _placeholder "Required" ] else [ _empty ])
+                yield! settings.Attrs
+                yield! validationAttributes ]
+            label ]
 
     let inputText expr a = input "text" expr a
 

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [track_api].[AddRegion]
+﻿CREATE PROCEDURE [track_api].[CreateRegion]
   @UserId int
 , @RegionName nvarchar(256)
 AS

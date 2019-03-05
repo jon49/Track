@@ -101,22 +101,23 @@
     <Build Include="track_api\Functions\Region\GetRegionLatest.sql" />
     <Build Include="track_api\Functions\Region\GetRegions.sql" />
     <Build Include="track_api\Functions\User\GetUserInfo.sql" />
-    <Build Include="track_api\Stored Procedures\Coach\AddCoach.sql" />
-    <Build Include="track_api\Stored Procedures\Coordinator\AddCoordinator.sql" />
-    <Build Include="track_api\Stored Procedures\Log\AddLogEntry.sql" />
-    <Build Include="track_api\Stored Procedures\Region\AddRegion.sql" />
-    <Build Include="track_api\Stored Procedures\User\AddUser.sql" />
-    <Build Include="track_api\Stored Procedures\Region\EditRegion.sql" />
-    <Build Include="track_api\Stored Procedures\Team\AddTeam.sql" />
-    <Build Include="track_api\Stored Procedures\Team\EditTeam.sql" />
+    <Build Include="track_api\Stored Procedures\Coach\CreateCoach.sql" />
+    <Build Include="track_api\Stored Procedures\Coordinator\CreateCoordinator.sql" />
+    <Build Include="track_api\Stored Procedures\Log\CreateLogEntry.sql" />
+    <Build Include="track_api\Stored Procedures\Region\CreateRegion.sql" />
+    <Build Include="track_api\Stored Procedures\User\CreateUser.sql" />
+    <Build Include="track_api\Stored Procedures\Region\UpdateRegion.sql" />
+    <Build Include="track_api\Stored Procedures\Team\UpdateTeam.sql" />
     <Build Include="track_api\Functions\Team\GetTeam.sql" />
     <Build Include="track_api\Functions\Team\GetTeamLastest.sql" />
     <Build Include="track_api\Functions\Team\GetTeams.sql" />
     <Build Include="track_api\Functions\Coach\GetLatestTeamCoach.sql" />
     <Build Include="track_api\Functions\Coach\GetTeamCoaches.sql" />
-    <Build Include="track_api\Stored Procedures\Coach\AddTeamCoach.sql" />
-    <Build Include="track_api\Stored Procedures\Coach\EditCoach.sql" />
+    <Build Include="track_api\Stored Procedures\Coach\CreateTeamCoach.sql" />
+    <Build Include="track_api\Stored Procedures\Coach\UpdateCoach.sql" />
     <Build Include="track_api\Functions\Coach\GetTeamCoach.sql" />
+    <Build Include="track_api\Stored Procedures\Region\CreateRegionTeam.sql" />
+    <Build Include="util\User Defined Types\IdNames.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />

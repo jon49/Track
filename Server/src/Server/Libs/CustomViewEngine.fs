@@ -3,6 +3,13 @@
 module ViewEngine =
 
     open Giraffe.GiraffeViewEngine
+    open System.IO
+
+    [<Struct>]
+    type ICSwapStyle =
+    | Replace
+    | Append
+    | Prepend
 
     let str = encodedText
 
@@ -17,6 +24,11 @@ module ViewEngine =
     let _icSrc = attr "ic-src"
     let _icDeps = attr "ic-deps"
     let _icIndicator = attr "ic-indicator"
+    let private swapStyle = attr "ic-swap-style"
+    let _icSwapStyle = function
+        | Replace -> swapStyle "replace"
+        | Append -> swapStyle "append"
+        | Prepend -> swapStyle "prepend"
 
     // Custom
     let _empty = flag ""

@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [track_api].[AddCoordinator]
+﻿CREATE PROCEDURE [track_api].[CreateCoordinator]
   @TempGuidId UNIQUEIDENTIFIER
 , @UserId INT
 AS

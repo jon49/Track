@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[AddTeamCoach]
+﻿CREATE PROCEDURE [dbo].[CreateTeamCoach]
     @param1 int = 0,
     @param2 int
 AS

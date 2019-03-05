@@ -18,7 +18,7 @@ module Repository =
 
     let update (TeamID.ID teamId) name =
         async {
-        use cmd = new DB.track_api.EditTeam(conn)
+        use cmd = new DB.track_api.UpdateTeam(conn)
         return! cmd.AsyncExecuteSingle(teamId, name)
         }
         |> single
@@ -27,13 +27,6 @@ module Repository =
         async {
         use cmd = new DB.track_api.GetTeam(conn)
         return! cmd.AsyncExecuteSingle(teamId)
-        }
-        |> single
-
-    let add (UserID.ID userId, RegionID.ID regionId) teamName =
-        async {
-        use cmd = new DB.track_api.AddTeam(conn)
-        return! cmd.AsyncExecuteSingle(regionId, userId, teamName)
         }
         |> single
 

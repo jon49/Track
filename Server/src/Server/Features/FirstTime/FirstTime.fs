@@ -7,14 +7,14 @@ module Model =
 
     let getNewCoordinatorRegionId guid (UserID.ID userId) =
         async {
-        use cmd = new DB.track_api.AddCoordinator(conn)
+        use cmd = new DB.track_api.CreateCoordinator(conn)
         return! cmd.AsyncExecuteSingle(guid, userId)
         }
         |> single
 
     let getNewCoachTeamId guid (UserID.ID userId) =
         async {
-        use cmd = new DB.track_api.NewCoach(conn)
+        use cmd = new DB.track_api.CreateCoach(conn)
         return! cmd.AsyncExecuteSingle(guid, userId)
         }
         |> single
