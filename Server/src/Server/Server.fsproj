@@ -29,7 +29,6 @@
     <Compile Include="Templates\App.fs" />
     <Compile Include="Templates\NotFound.fs" />
     <Compile Include="Templates\InternalError.fs" />
-    <Compile Include="Features\Shared\Models\User.fs" />
     <None Include="Features\Shared\Sql\UserStatus.sql" />
     <None Include="Features\Shared\Sql\UserPermissions.sql" />
     <Compile Include="Features\Shared\Shared.fs" />

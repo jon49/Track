@@ -78,7 +78,7 @@ module Model =
 
     [<CLIMutable>]
     type Region = {
-        [<MaxLength(256)>]
+        [<Display(Name = "Region Name"); MaxLength(256)>]
         Name : string
     } with
         static member Init = { Name = "" }
@@ -195,16 +195,22 @@ module View =
                     button [ _class (M.Color.primary + M.Col.sm); _icGetFrom (Url.Team.add regionId); _icTarget "#add-team-button" ] [ rawText "Add Team" ] ] ]
         ]
 
-    let index =
-        div []
-            [
-            h2 [] [ rawText "Regions" ]
-            div [] [
-                p [] [ rawText "Please enter the name of your new region." ]
-                form [ _method "post"; _icPostTo Url.index; _id "new-region" ] [
-                    UI.inputText { InputSettings.Init with Attrs = [ _autofocus ]; Label = sprintf "New %s" >> Some } Region.Init <@ fun x -> x.Name @>
-                    button [ _type "submit"; _icSuccessAction "[0]reset"; _icActionTarget "#new-region"  ] [ rawText "Submit" ] ]
-                ]]
+    let region (x : RegionEdit) =
+        let id = sprintf "region-%i" x.Id
+        div [ _id id; ] [
+            a [ _href (Url.show x.Id) ] [ str x.Region.Name; UI.editButton (Url.edit x.Id) (Some id) ]
+        ]
+
+    let index (regions : RegionEdit list) =
+        [
+        h2 [] [ rawText "Regions" ]
+        div [ _id "regions"; _icAppendFrom Url.latest ] (regions |> List.map region)
+        div [] [
+            p [] [ rawText "Please enter the name of your new region." ]
+            form [ _method "post"; _icPostTo Url.index; _id "new-region" ] [
+                UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } Region.Init <@ fun x -> x.Name @>
+                button [ _type "submit"; _icSuccessAction "[0]reset"; _icActionTarget "#new-region"  ] [ rawText "Submit" ] ]
+            ] ]
 
 module Controller =
     open Saturn
@@ -223,9 +229,9 @@ module Controller =
         fun user ctx ->
         match user.PreferredRegionId, user.Roles.Contains(User.Role.Coordinator) with
         | Some id, true -> Controller.redirect ctx (Url.show id)
-        | _, false -> AspNet.html ctx <| (Task.lift <| Error [ Errors.AuthorizationError ])
-        | None, true ->
-            AspNet.html ctx <| (Task.lift <| Ok View.index)
+        | Some _, false -> AspNet.html ctx <| (Task.lift <| Error [ Errors.AuthorizationError ])
+        | None, _ ->
+            AspNet.html ctx <| (Task.lift <| Ok (App.layout (App.UserLayout.Init(user)) (View.index [])))
 
     let showRegion regionId : UserContext =
         fun user ctx ->
@@ -252,7 +258,7 @@ module Controller =
                 team, coaches
             )
         let regions = regions |> List.map (fun x -> RegionEdit.Create(x.RegionId, x.Name))
-        return App.layout (Some user) <| View.show regionId regions teams
+        return App.layout (App.UserLayout.Init(user)) <| View.show regionId regions teams
         } |> AspNet.html ctx
 
     let updateRegion regionId : UserContext =
@@ -297,7 +303,7 @@ module Controller =
     let latestRegion (user: User.T) ctx =
         taskResult {
         let! region = Repository.getLastest user.UserId
-        return View.regionRow (View.regionAttrId region.RegionId) (RegionEdit.Create (region.RegionId, region.Name))
+        return View.region (RegionEdit.Create(region.RegionId, region.Name))
         }
         |> AspNet.partial ctx
 

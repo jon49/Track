@@ -5,14 +5,35 @@ open Track.User
 open Utils
 open ViewEngine
 
+[<Struct>]
+type UserLayout = {
+    User : T option
+    Type : Type
+} with
+    static member Init(user, authenticated) =
+        { User = user
+          Type = authenticated }
+    static member Authenticated =
+        { User = None
+          Type = Authenticated }
+    static member Unknown =
+        { User = None
+          Type = UnknownUser }
+    static member Init(user) =
+        { User = Some user
+          Type = Registered }
+
 let layout  =
     fun user (content: XmlNode list) ->
     let authenticatedNavigation =
-        match user |> Option.map (fun x -> x.Type) |> Option.defaultValue UnknownUser with
-        | Registered | Authenticated ->
-            a [ _id "btn-logout"; _class (Class.M.Col.sm + Class.M.Col.md+ Class.M.button); _icPostTo "/logout"; ] [ rawText "Logout" ]
-        | UnknownUser ->
+        match user with
+        | { User = None; Type = UnknownUser } ->
             a [ _id "btn-login"; _class (Class.M.Col.sm + Class.M.Col.md + Class.M.button); _href "/login"; ] [ rawText "Login" ]
+        | { User = None; Type = Authenticated } ->
+            a [ _id "btn-logout"; _class (Class.M.Col.sm + Class.M.Col.md+ Class.M.button); _icPostTo "/logout"; ] [ rawText "Logout" ]
+        | { User = Some user; Type = Registered } ->
+            a [ _id "btn-logout"; _class (Class.M.Col.sm + Class.M.Col.md+ Class.M.button); _icPostTo "/logout"; ] [ rawText "Logout" ]
+        | _ -> p [] [ rawText "How did you get here?" ]
 
     html [] [
         head [] [
