@@ -11,29 +11,7 @@ module Repository =
 
     let getAllTeams (RegionID.ID regionId) =
         async {
-        use cmd = new SqlCommandProvider<"
-            --DECLARE @RegionId int = 1;
-            SELECT
-                  t.[Name]
-                , t.TeamId
-                , rt.RegionId
-                , u.Email
-                , u.FirstName
-                , u.LastName
-                , u.UserId
-                , u.PreferredTeamId
-            FROM track.Team t
-            JOIN track.RegionTeam rt
-                ON rt.TeamId = t.TeamId
-            JOIN track.UserTeam ut
-                ON ut.TeamId = t.TeamId
-                AND ut.Active = 1
-            JOIN track.[User] u
-                ON u.UserId = ut.UserId
-            WHERE rt.RegionId = @RegionId
-              AND rt.Active = 1
-            ORDER BY t.[Name]
-            ", CONNECTION_STRING>(conn)
+        use cmd = new DB.track_api.GetRegionTeams(conn)
         let! result = cmd.AsyncExecute(regionId)
         return Seq.toList result
         } |> list
@@ -104,6 +82,29 @@ module Model =
         Email : string[]
     }
 
+module Mapping =
+    open Track
+    open Teams.Model
+    open Coaches.Model
+    open Repository
+
+    let toGroupTeams (teams : DB.track_api.GetRegionTeams.Record list) =
+            teams
+            |> List.groupBy (fun x -> x.TeamId)
+            |> List.map (fun (_, xs) ->
+                let team = List.head xs
+                let team = TeamEdit.Create(team.TeamId, team.Name)
+                let coaches =
+                    xs
+                    |> List.map (fun x ->
+                        let verifiedCoach =
+                            match x.PreferredTeamId with
+                            | Some p when p = team.Id -> true
+                            | _ -> false
+                        (verifiedCoach, CoachEdit.Create(x.UserId, x.FirstName, x.LastName, x.Email)) )
+                team, coaches
+            )
+
 module Url =
 
     let index = "/regions"
@@ -136,7 +137,7 @@ module View =
 
     let addCoach (RegionID.ID regionId) =
         let coach = Coach.Init
-        div [] [
+        div [ _id "coach-form" ] [
         UI.inputText InputSettings.Init coach <@ fun x -> x.FirstName @>
         UI.inputText InputSettings.Init coach <@ fun x -> x.LastName @>
         UI.inputEmail InputSettings.Init coach <@ fun x -> x.Email @>
@@ -149,23 +150,27 @@ module View =
         let addAnotherCoachId = "add-another-coach"
         div [ _class M.row; ] [
             label [ _class (M.button + M.Color.primary + M.Col.sm); _for "add-team-modal" ] [ rawText "Add Another Team" ]
-            GiraffeViewEngine.input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class "modal" ]
+            input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class "modal" ]
             div [ Accessibility._roleDialog; Accessibility._ariaLabelledBy "add-team-title" ] [
                 div [ _style "margin:auto;" ] [
                     form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); _class (M.container + M.section + Class.scrollable) ] [
                         h3 [ _id "add-team-title" ] [ rawText "New Team" ]
                         div [ _class M.row ] [
-                            div [ _class M.Col.sm ] [ UI.inputText InputSettings.Init team <@ fun x -> x.Name @> ]
+                            div [ _class M.Col.sm ] [
+                                UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } team <@ fun x -> x.Name @>
+                                div [] [
+                                    input [ _type "checkbox"; _id "i-am-the-coach" ]
+                                    label [ _for "i-am-the-coach" ] [ rawText "I am the coach" ] ] ]
                             div [ _id "add-coaches"; _class M.Col.sm ] [
                                 div [ _id addAnotherCoachId ] [ addCoach regionID ]
-                                button [ _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
+                                button [ _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
                                     ] ]
                         div [ _class M.container ] [
                             div [ _class M.row ] [
                                 label [ _class (M.button + M.Color.secondary); _for "add-team-modal" ] [ rawText "Cancel" ]
                                 button [ _type "reset"; _class M.Color.secondary; ] [ rawText "Reset" ]
-                                button [ _type "submit"; _class (M.Color.primary + Class.moveRight) ] [ rawText "Add Team" ] ]
-                            ] ] ] ] ]
+                                button [ _type "submit"; _class (M.Color.primary + Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ] ]
+            script [ _src "/scripts/region-teams.js" ] [] ]
 
     let edit (x : RegionEdit) =
         form [ _method "post"; _icPostTo (Url.show x.Id); _icTarget ((+) "#" <| regionAttrId x.Id); ] [
@@ -238,25 +243,8 @@ module Controller =
         taskResult {
         let! regionId = Task.lift <| user.getRegionId regionId
         let! regions, teams =
-            TaskResult.T.Parallel(
-              fun () -> Repository.getAll user.UserId
-            , fun () -> Repository.getAllTeams regionId)
-        let teams =
-            teams
-            |> List.groupBy (fun x -> x.TeamId)
-            |> List.map (fun (_, xs) ->
-                let team = List.head xs
-                let team = TeamEdit.Create(team.TeamId, team.Name)
-                let coaches =
-                    xs
-                    |> List.map (fun x ->
-                        let verifiedCoach =
-                            match x.PreferredTeamId with
-                            | Some p when p = team.Id -> true
-                            | _ -> false
-                        (verifiedCoach, CoachEdit.Create(x.UserId, x.FirstName, x.LastName, x.Email)) )
-                team, coaches
-            )
+            TaskResult.T.Parallel(Repository.getAll user.UserId, Repository.getAllTeams regionId)
+        let teams = Mapping.toGroupTeams teams
         let regions = regions |> List.map (fun x -> RegionEdit.Create(x.RegionId, x.Name))
         return App.layout (App.UserLayout.Init(user)) <| View.show regionId regions teams
         } |> AspNet.html ctx

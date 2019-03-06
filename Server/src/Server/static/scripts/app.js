@@ -27,3 +27,9 @@ $(document)
         $submit.attr('disabled', false)
     });
 
+const Track = function Track() {
+    return {
+        pipe: (...fs) => arg => fs.reduce((x, f) => f(x), arg)
+    }
+}
+

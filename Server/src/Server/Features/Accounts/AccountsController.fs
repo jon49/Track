@@ -22,6 +22,7 @@ module Controller =
             Cache.remove (User.cacheKey <| AspNet.getAuth0Id ctx)
             let result = signOut "Cookies" next ctx
             if ctx.Request.Host.HasValue && not <| ctx.Request.Host.Value.Contains("/") then
+                // TODO this doesn't work. It just shows up as literally '""'
                 Response.ok ctx ""
             else redirectTo false "/" next ctx
 

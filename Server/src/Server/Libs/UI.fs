@@ -132,7 +132,7 @@ module UI =
         label [ _for pi.Name ] [ rawText displayName ]
         ]
 
-    let input<'a, 'b when 'a :> obj and 'b :> obj> ``type`` settings (a : 'a) (expr : Expr<'a -> 'b>) =
+    let customInput<'a, 'b when 'a :> obj and 'b :> obj> ``type`` settings (a : 'a) (expr : Expr<'a -> 'b>) =
         let pi = getPropertyInfo expr
         let value = getValue pi a
         let required = not <| Reflection.isOption value
@@ -157,9 +157,9 @@ module UI =
                 yield! validationAttributes ]
             label ]
 
-    let inputText expr a = input "text" expr a
+    let inputText expr a = customInput "text" expr a
 
-    let inputEmail  expr a = input "email" expr a
+    let inputEmail  expr a = customInput "email" expr a
 
     let editButton editUrl targetId =
         let target =

@@ -42,7 +42,7 @@ let layout  =
             title [] [ rawText "Track" ]
             // link [ _rel "stylesheet"; _href "https://unpkg.com/picnic" ]
             link [ _rel "stylesheet"; _href "https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css" ]
-            link [ _href "/site.css"; _rel "stylesheet" ]
+            link [ _href "/styles/site.css"; _rel "stylesheet" ]
         ]
         body [] [
             header [ _class Class.M.row ] [
@@ -52,6 +52,6 @@ let layout  =
             
             script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []
             script [ _src "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js" ] []
-            script [ _src "/app.js" ] []
+            script [ _src "/scripts/app.js" ] []
         ]
     ]

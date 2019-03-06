@@ -118,6 +118,7 @@
     <Build Include="track_api\Functions\Coach\GetTeamCoach.sql" />
     <Build Include="track_api\Stored Procedures\Region\CreateRegionTeam.sql" />
     <Build Include="util\User Defined Types\IdNames.sql" />
+    <Build Include="track_api\Functions\Region\GetRegionTeams.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />

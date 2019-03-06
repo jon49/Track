@@ -44,13 +44,11 @@ module Task =
     open System.Threading.Tasks
 
     type T () =
-        static member Parallel(a : unit -> Task<'a>, b : unit -> Task<'b>) =
+        static member Parallel(a : Task<'a>, b : Task<'b>) =
             task {
-            let a' = Task.Run<'a>(a)
-            let b' = Task.Run<'b>(b)
-            let! a'' = a'
-            let! b'' = b'
-            return a'', b''
+            let! a = a
+            let! b = b
+            return a, b
             }
 
     let apply (fTask : Task<'a -> 'b>) (xTask : Task<'a>) =
