@@ -1,4 +1,4 @@
-﻿body {
+body {
     width: 926px;
     max-width: 100%;
     margin: auto;
@@ -25,4 +25,29 @@ span.icon-slash {
     max-height: 90vh;
     overflow-y: auto;
 }
+
+/** Buttons **/
+/*  --fore-color:#111;
+ --secondary-fore-color:#444;
+ --back-color:#f8f8f8;
+ --secondary-back-color:#f0f0f0; */
+
+button:focus, .button:focus, button:hover, .button:hover {
+    background-color: var(--fore-color);
+    color: var(--back-color);
+    border: 1px solid var(--back-color);
+}
+
+button.secondary:focus, .button.secondary:focus, button:hover, .button:hover {
+    background-color: var(--secondary-fore-color);
+    color: var(--secondary-back-color);
+}
+
+button.primary:focus, .button.primary:focus, button:hover, .button:hover {
+    background-color: var(--primary-fore-color);
+    color: var(--primary-back-color);
+    border: 1px solid var(--primary-back-color);
+}
+
+
 

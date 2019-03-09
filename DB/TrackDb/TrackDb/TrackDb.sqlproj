@@ -76,6 +76,9 @@
     <Folder Include="track_api\Stored Procedures\Team" />
     <Folder Include="track_api\Functions\Team" />
     <Folder Include="track_api\Functions\Coach" />
+    <Folder Include="track\Stored Procedures" />
+    <Folder Include="track\Stored Procedures\Team" />
+    <Folder Include="track\User Defined Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="track\Tables\Region.sql" />
@@ -109,7 +112,6 @@
     <Build Include="track_api\Stored Procedures\Region\UpdateRegion.sql" />
     <Build Include="track_api\Stored Procedures\Team\UpdateTeam.sql" />
     <Build Include="track_api\Functions\Team\GetTeam.sql" />
-    <Build Include="track_api\Functions\Team\GetTeamLastest.sql" />
     <Build Include="track_api\Functions\Team\GetTeams.sql" />
     <Build Include="track_api\Functions\Coach\GetLatestTeamCoach.sql" />
     <Build Include="track_api\Functions\Coach\GetTeamCoaches.sql" />
@@ -119,6 +121,12 @@
     <Build Include="track_api\Stored Procedures\Region\CreateRegionTeam.sql" />
     <Build Include="util\User Defined Types\IdNames.sql" />
     <Build Include="track_api\Functions\Region\GetRegionTeams.sql" />
+    <Build Include="track_api\Stored Procedures\Region\CreateRegionTeamWithCoordinator.sql" />
+    <Build Include="track\Stored Procedures\Team\CreateTeam.sql" />
+    <Build Include="track\Stored Procedures\Team\CreateTeamUser.sql" />
+    <Build Include="track\User Defined Types\BasicUser.sql" />
+    <Build Include="track_api\Functions\Region\GetRegionTeamsLatest.sql" />
+    <Build Include="track_api\Functions\Region\_GetRegionTeams.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TrackDb.publish.xml" />

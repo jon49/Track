@@ -8,7 +8,7 @@
 
 $(document)
     .on("beforeAjaxSend.ic", function (evt, settings) {
-        $('form.disabled').attr('disabled', true)
+        $('form.disabled').find('[type="submit"]').attr('disabled', true)
         settings.xhrFields = { withCredentials: true }
     })
     //.on('success.ic', function (event, elt, _, __, xhr, ___) {
@@ -23,13 +23,10 @@ $(document)
     .on('resetForm', function (event, target) {
         var $form = $(target)
         $form.get()[0].reset()
-        var $submit = $form.find('[type="submit"]')
-        $submit.attr('disabled', false)
+        $form.find('[type="submit"]').attr('disabled', false)
     });
 
-const Track = function Track() {
-    return {
-        pipe: (...fs) => arg => fs.reduce((x, f) => f(x), arg)
-    }
+var Track = {
+    pipe: (...fs) => arg => fs.reduce((x, f) => f(x), arg)
 }
 

@@ -26,7 +26,7 @@ module Reflection =
             then
                 if a = null
                     then true, None
-                else true, Some(v.GetValue(a, [| |]))
+                else true, Some(v.GetValue(a))
         else false, if a = null then None else Some a
 
     // http://www.contactandcoil.com/software/dotnet/getting-a-property-name-as-a-string-in-f/

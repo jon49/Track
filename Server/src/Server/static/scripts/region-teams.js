@@ -5,6 +5,11 @@ $(function() {
 
     $('[type="reset"]').on('click', toggleCoachRequiredInputs.bind(null, true))
 
+    function focusOnTeamName() {
+        debugger;
+        $('#TeamName').focus()
+    }
+
     // Remove extra fields which might have been added.
     function removeAdditionalCoachFields() {
         Array($('input[name="FirstName"]').length - 1).fill(1).forEach(x => {
@@ -20,12 +25,11 @@ $(function() {
     function toggleCoachRequiredInputs(required) {
         removeAdditionalCoachFields()
         $('#add-another-coach-button').attr('disabled', !required)
-        $('#coach-form')
+        $('#coach-form').find('input')
             .each((_, x) => {
-                $(x).find('input').each((_, x) => {
-                    $(x).attr('required', required).attr('disabled', !required).attr('value', void 0)
-                })
+                $(x).attr('disabled', !required).val(null)
             })
+        $('[autofocus]').focus()
     }
 })
 

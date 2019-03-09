@@ -1,0 +1,5 @@
+﻿CREATE TYPE [track].[BasicUser] AS TABLE
+( Email NVARCHAR(256) NOT NULL
+, FirstName NVARCHAR(128) NOT NULL
+, LastName NVARCHAR(128) NOT NULL
+);

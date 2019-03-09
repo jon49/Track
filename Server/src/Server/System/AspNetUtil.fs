@@ -12,6 +12,7 @@ module AspNet =
     open System.Threading.Tasks
     open Utils
     open Microsoft.Extensions.Primitives
+    open Saturn.ControllerHelpers
 
     let getClaim (ctx : HttpContext) (claim : string) =
         ctx.User.FindFirst(claim)
@@ -88,38 +89,40 @@ module AspNet =
             |> div []
             |> renderHtmlNode
 
-    let html (ctx : HttpContext) (result : TaskResult<XmlNode, Errors list>) =
+    let render (ctx : HttpContext) f (result : TaskResult<_, Errors list>) =
         task {
         match! result with
-        | Ok x -> return! Controller.renderHtml ctx x
+        | Ok x -> return! f x
         | Error errors ->
             return! Controller.html ctx (toHtmlErrorResult ctx errors)
         }
 
-    let partial (ctx : HttpContext) (result : TaskResult<XmlNode, Errors list>) =
-        task {
-        match! result with
-        | Ok x ->
-            return! Controller.html ctx <| renderHtmlNode x
-        | Error errors ->
-            return! Controller.html ctx (toHtmlErrorResult ctx errors)
-        }
+    let html ctx =
+        render ctx (Controller.renderHtml ctx)
 
-    let created f (ctx : HttpContext) (location : 'a -> string) (result : TaskResult<_, _>) =
+    let partial ctx =
+        render ctx (renderHtmlNode >> Controller.html ctx)
+
+    let partials ctx =
+        render ctx (renderHtmlNodes >> Controller.html ctx)
+
+    let created f (ctx : HttpContext) (location : int -> string) onSuccess (result : TaskResult<_, _>) =
         task {
         match! result with
-        | Ok x when f x ->
-            ctx.Response.StatusCode <- int HttpStatusCode.Created
-            ctx.Response.Headers.Add("Location", new StringValues(location x))
-            return! Controller.response ctx ""
+        | Ok x when f x > 0 ->
+            onSuccess ctx
+            ctx.Response.Headers.Add("Location", new StringValues(location (f x)))
+            return Some ctx
         | Ok _ -> return! Controller.html ctx (toHtmlErrorResult ctx [ Errors.InternalServerError ])
         | Error errors ->
             return! Controller.html ctx (toHtmlErrorResult ctx errors)
         }
 
-    let createdId ctx location success result =
-        success ctx
-        created (fun x -> x > 0) ctx location result
+    let createdId ctx location onSuccess result =
+        created id ctx location onSuccess result
+
+    let maybeCreatedId (ctx : HttpContext) (location : int -> string) onSuccess result =
+        created (Option.defaultValue 0) ctx location onSuccess result
 
     let noContent (ctx : HttpContext) (result : TaskResult<unit, Errors list>) =
         task {

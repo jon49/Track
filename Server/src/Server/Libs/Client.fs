@@ -51,7 +51,7 @@ module Client =
         |> List.choose (fun propertyInfo ->
             let validationAttributes = Reflection.getCustomAttributes<ValidationAttribute> propertyInfo
             let value = Reflection.getValue propertyInfo a
-            match Reflection.isOption a, Option.ofObj value with
+            match Reflection.SomeObj value with
             | true, Some value
             | false, Some value ->
                 validationAttributes

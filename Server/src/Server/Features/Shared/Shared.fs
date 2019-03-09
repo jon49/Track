@@ -13,6 +13,7 @@ module Repository =
         let CONNECTION_STRING = @"Data Source=.\SQLEXPRESS;Initial Catalog=JNyman;Integrated Security=True"
 
         type DB = SqlProgrammabilityProvider<CONNECTION_STRING>
+
         let conn = Setting.Database.Connection
         
         let noContent result =

@@ -11,6 +11,14 @@ module Class =
     let moveRight = "move-right "
     [<Literal>]
     let scrollable = "scrollable "
+    [<Literal>]
+    let flex = "flex "
+
+    module Icon =
+        [<Literal>]
+        let checkCircle = "icon-check-circle "
+        [<Literal>]
+        let slash = "icon-slash "
 
     /// Mini CSS
     module M =
