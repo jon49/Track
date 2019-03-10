@@ -33,6 +33,8 @@ module ViewEngine =
     // Custom
     let _empty = flag ""
 
+    let _dataSimple = attr "data"
+
     module Header =
         open Microsoft.AspNetCore.Http
         open Microsoft.Extensions.Primitives

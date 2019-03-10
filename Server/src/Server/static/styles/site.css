@@ -1,19 +1,45 @@
 body {
-    width: 926px;
-    max-width: 100%;
+    width: 90%;
+    max-width: 960px;
     margin: auto;
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
 }
 
-.bg-none {
+body > header:first-child + * {
+    padding-top: 80px;
+}
+
+/*.bg-none {
     background: none !important;
-}
+}*/
 
-span.icon-check-circle {
+.icon-check-circle {
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d0021b' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'%3E%3C/line%3E%3C/svg%3E")
 }
 
-span.icon-slash {
+.icon-slash {
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d0021b' stroke-width='2' stroke-linecap='square' stroke-linejoin='arcs'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='4.93' y1='4.93' x2='19.07' y2='19.07'%3E%3C/line%3E%3C/svg%3E")
+}
+
+[class^="icon-"],
+[class*="icon-"]
+{
+    height: 1em;
+    width: 1em;
+    padding: 0.25em;
+    margin: 0.25em;
+}
+
+.icon-edit {
+    background: no-repeat center/80% url("/images/edit.svg") !important;
+}
+
+.icon-loading {
+    background: no-repeat center/80% url("/images/loading-interwind.svg") !important;
+    padding: 1em;
+    margin: 0;
+    display: none;
 }
 
 /* used with flex to move an element to the right. */
@@ -21,32 +47,10 @@ span.icon-slash {
     margin-left: auto;
 }
 
+
 .scrollable {
     max-height: 90vh;
     overflow-y: auto;
-}
-
-/** Buttons **/
-/*  --fore-color:#111;
- --secondary-fore-color:#444;
- --back-color:#f8f8f8;
- --secondary-back-color:#f0f0f0; */
-
-button:focus, .button:focus, button:hover, .button:hover {
-    background-color: var(--fore-color);
-    color: var(--back-color);
-    border: 1px solid var(--back-color);
-}
-
-button.secondary:focus, .button.secondary:focus, button:hover, .button:hover {
-    background-color: var(--secondary-fore-color);
-    color: var(--secondary-back-color);
-}
-
-button.primary:focus, .button.primary:focus, button:hover, .button:hover {
-    background-color: var(--primary-fore-color);
-    color: var(--primary-back-color);
-    border: 1px solid var(--primary-back-color);
 }
 
 

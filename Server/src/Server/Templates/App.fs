@@ -4,6 +4,7 @@ open Giraffe.GiraffeViewEngine
 open Track.User
 open Utils
 open ViewEngine
+module P = Class.P
 
 [<Struct>]
 type UserLayout = {
@@ -24,15 +25,16 @@ type UserLayout = {
           Type = Registered }
 
 let layout  =
+    let pseudoButtonClass = P.pseudo + P.button
     fun user (content: XmlNode list) ->
     let authenticatedNavigation =
         match user with
         | { User = None; Type = UnknownUser } ->
-            a [ _id "btn-login"; _class (Class.M.Col.sm + Class.M.Col.md + Class.M.button); _href "/login"; ] [ rawText "Login" ]
+            a [ _id "btn-login"; _class pseudoButtonClass; _href "/login"; ] [ rawText "Login" ]
         | { User = None; Type = Authenticated } ->
-            a [ _id "btn-logout"; _class (Class.M.Col.sm + Class.M.Col.md+ Class.M.button); _icPostTo "/logout"; ] [ rawText "Logout" ]
+            a [ _id "btn-logout"; _class pseudoButtonClass; _icPostTo "/logout"; ] [ rawText "Logout" ]
         | { User = Some user; Type = Registered } ->
-            a [ _id "btn-logout"; _class (Class.M.Col.sm + Class.M.Col.md+ Class.M.button); _icPostTo "/logout"; ] [ rawText "Logout" ]
+            a [ _id "btn-logout"; _class pseudoButtonClass; _icPostTo "/logout"; ] [ rawText "Logout" ]
         | _ -> p [] [ rawText "How did you get here?" ]
 
     html [] [
@@ -40,14 +42,20 @@ let layout  =
             meta [_charset "utf-8"]
             meta [_name "viewport"; _content "width=device-width, initial-scale=1.0" ]
             title [] [ rawText "Track" ]
-            // link [ _rel "stylesheet"; _href "https://unpkg.com/picnic" ]
-            link [ _rel "stylesheet"; _href "https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-default.min.css" ]
+            link [ _rel "stylesheet"; _href "//unpkg.com/picnic@6.5.0/picnic.min.css" ] // https://unpkg.com/picnic
             link [ _href "/styles/site.css"; _rel "stylesheet" ]
         ]
         body [] [
-            header [ _class Class.M.row ] [
-                a [ _href "/"; _class ( Class.M.logo + Class.M.Col.sm + Class.M.Col.md) ] [ rawText "Track &amp; Field" ]
-                authenticatedNavigation ]
+            header [] [
+                nav [][
+                    a [ _href "/"; _class (P.brand) ] [ rawText "Track &amp; Field" ]
+                    input [ _id "bmenu"; _type "checkbox"; _class P.show ]
+                    label [ _for "bmenu"; _class (P.burger + P.toggle + P.pseudo + P.button) ] [ rawText "menu" ]
+                    div [ _class P.menu ] [
+                        authenticatedNavigation
+                    ]
+                     ]
+                ]
             main [] content
             
             script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []

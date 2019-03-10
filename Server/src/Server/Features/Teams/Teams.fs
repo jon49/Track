@@ -73,6 +73,6 @@ module View =
     open Utils.UI
 
     let show (team : TeamEdit) =
-        article [ _class (Class.M.Col.md_ 6) ] [
+        article [ _class "" ] [
             p [] [ str team.Team.Name ]
             UI.editButton (Url.edit team.Id) None ]

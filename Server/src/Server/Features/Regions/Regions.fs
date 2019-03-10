@@ -1,4 +1,4 @@
-﻿namespace Track.Regions
+namespace Track.Regions
 
 module Repository =
 
@@ -171,8 +171,7 @@ module View =
     open Track.Teams.Model
     open Track.Coaches.Model
     open Giraffe
-
-    module M = Utils.Class.M
+    module P = Class.P
 
     let regionAttrId = sprintf "region-%i"
 
@@ -189,19 +188,19 @@ module View =
         let regionAttrId = regionAttrId region.Id
         [
         div [ _id regionAttrId ] [ regionRow regionAttrId region ]
-        article [ _class M.container ] [
-                yield div [ _class M.row ] [
-                    h3 [ _class M.Col.sm ] [ rawText "Teams" ]
-                    h3 [ _class M.Col.sm ] [ rawText "Coaches" ] ]
+        article [ _class "" ] [
+                yield div [ _class "" ] [
+                    h3 [ _class "" ] [ rawText "Teams" ]
+                    h3 [ _class "" ] [ rawText "Coaches" ] ]
                 yield!  teams
                         |> List.map (fun (team, coaches) ->
-                            div [ _class M.row ] [
+                            div [ _class "" ] [
                                 Teams.View.show team
-                                div [ _class (M.Col.md_ 6) ] (coaches |> List.map (fun x -> x ||> Coaches.View.show))
+                                div [ _class "" ] (coaches |> List.map (fun x -> x ||> Coaches.View.show))
                             ]
                         )
-                yield div [ _class M.row; _id "add-team-button" ] [
-                    button [ _class (M.Color.primary + M.Col.sm); _icGetFrom (Url.Team.add regionId); _icTarget "#add-team-button" ] [ rawText "Add Team" ] ] ]
+                yield div [ _class P.flex; _id "add-team-button" ] [
+                    button [ _icGetFrom (Url.Team.add regionId); _icTarget "#add-team-button" ] [ rawText "Add Team" ] ] ]
         ]
 
     let region (x : RegionEdit) =
@@ -238,28 +237,28 @@ module View =
             let (RegionID.ID regionId) = regionID
             let team = RegionTeamForm.Init
             let addAnotherCoachId = "add-another-coach"
-            div [ _class M.row; ] [
-                label [ _class (M.button + M.Color.primary + M.Col.sm); _for "add-team-modal" ] [ rawText "Add Another Team" ]
+            div [ _class ""; ] [
+                label [ _class ""; _for "add-team-modal" ] [ rawText "Add Another Team" ]
                 input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class "modal" ]
                 div [ Accessibility._roleDialog; Accessibility._ariaLabelledBy "add-team-title" ] [
                     div [ _style "margin:auto;" ] [
-                        form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); _class (M.container + M.section + Class.scrollable) ] [
+                        form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); _class (Class.scrollable) ] [
                             h3 [ _id "add-team-title" ] [ rawText "New Team" ]
-                            div [ _class M.row ] [
-                                div [ _class M.Col.sm ] [
+                            div [ _class "" ] [
+                                div [ _class "" ] [
                                     UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } team <@ fun x -> x.TeamName @>
                                     div [] [
                                         input [ _tabindex "30"; _type "checkbox"; _id "i-am-the-coach"; _name "IAmTheCoach" ]
                                         label [ _for "i-am-the-coach" ] [ rawText "I am the coach" ] ] ]
-                                div [ _id "add-coaches"; _class M.Col.sm ] [
+                                div [ _id "add-coaches"; _class "" ] [
                                     div [ _id addAnotherCoachId ] [ Coach.add regionID ]
                                     button [ _type "button"; _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
                                         ] ]
-                            div [ _class M.container ] [
-                                div [ _class M.row ] [
-                                    label [ _class (M.button + M.Color.secondary); _for "add-team-modal"; _tabindex "28" ] [ rawText "Cancel" ]
-                                    button [ _type "reset"; _class M.Color.secondary; _tabindex "29" ] [ rawText "Reset" ]
-                                    button [ _type "submit"; _class (M.Color.primary + Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ] ]
+                            div [ _class "" ] [
+                                div [ _class "" ] [
+                                    label [ _class ""; _for "add-team-modal"; _tabindex "28" ] [ rawText "Cancel" ]
+                                    button [ _type "reset"; _class ""; _tabindex "29" ] [ rawText "Reset" ]
+                                    button [ _type "submit"; _class (Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ] ]
                 script [ _src "/scripts/region-teams.js" ] [] ]
 
 
@@ -284,7 +283,7 @@ module View =
  
         let row ((team, coaches) : TeamCoachEdit) =
             let coachId = sprintf "coach-%i"
-            div [ _class Class.flex ] [
+            div [ _class Class.P.flex ] [
                 div [ _id (sprintf "team-%i-coaches" team.Id) ] (coaches |> List.map coachRow)
             ]
 

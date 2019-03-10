@@ -1,111 +1,45 @@
-﻿namespace Utils
+namespace Utils
 
 module Class = 
     open Giraffe.GiraffeViewEngine
 
     [<Literal>]
     let revealIfActive = "reveal-if-active "
-    [<Literal>]
-    let backgroundNone = "bg-none "
+    //[<Literal>]
+    //let backgroundNone = "bg-none "
     [<Literal>]
     let moveRight = "move-right "
     [<Literal>]
     let scrollable = "scrollable "
-    [<Literal>]
-    let flex = "flex "
 
     module Icon =
         [<Literal>]
         let checkCircle = "icon-check-circle "
         [<Literal>]
         let slash = "icon-slash "
+        [<Literal>]
+        let edit = "icon-edit "
 
-    /// Mini CSS
-    module M =
+    /// Picnic CSS
+    module P =
         [<Literal>]
-        let container = "container "
+        let flex = "flex "
         [<Literal>]
-        let row = "row "
+        let brand = "brand "
         [<Literal>]
-        let logo = "logo "
+        let show = "show "
+        [<Literal>]
+        let burger = "burger "
+        [<Literal>]
+        let toggle = "toggle "
+        [<Literal>]
+        let pseudo = "pseudo "
         [<Literal>]
         let button = "button "
         [<Literal>]
-        let card = "card "
-        [<Literal>]
-        let section = "section "
-
-        module Form =
-            [<Literal>]
-            let inputGroup = "input-group "
-            [<Literal>]
-            let vertical = "vertical "
-            [<Literal>]
-            let fluid = "fluid "
-
-        module Color =
-            [<Literal>]
-            let primary = "primary "
-
-            [<Literal>]
-            let secondary = "secondary "
-            
-
-        module Animation =
-
-            [<Literal>]
-            let spinner = "spinner "
-
-        module Icon =
-            [<Literal>]
-            let alert = "icon-alert "
-            [<Literal>]
-            let bookmark = "icon-bookmark "
-            [<Literal>]
-            let calendar = "icon-calendar "
-            [<Literal>]
-            let cart = "icon-cart "
-            [<Literal>]
-            let credit = "icon-credit "
-            [<Literal>]
-            let edit = "icon-edit "
-            [<Literal>]
-            let help = "icon-help "
-            [<Literal>]
-            let home = "icon-home "
-            [<Literal>]
-            let info = "icon-info "
-            [<Literal>]
-            let link = "icon-link "
-            [<Literal>]
-            let location = "icon-location "
-            [<Literal>]
-            let lock = "icon-lock "
-            [<Literal>]
-            let mail = "icon-mail "
-            [<Literal>]
-            let phone = "icon-phone "
-            [<Literal>]
-            let rss = "icon-rss "
-            [<Literal>]
-            let search = "icon-search "
-            [<Literal>]
-            let settings = "icon-settings "
-            [<Literal>]
-            let share = "icon-share "
-            [<Literal>]
-            let upload = "icon-upload "
-            [<Literal>]
-            let user = "icon-user "
-
-        module Col =
-            [<Literal>]
-            let md = "col-md "
-            let md_ = sprintf "col-md-%i "
-            [<Literal>]
-            let sm = "col-sm "
-            let offset_sm = sprintf "col-sm-offset-%i "
-            let sm_ = sprintf "col-sm-%i "
+        let menu = "menu "
+        //[<Literal>]
+        //let  = " "
 
 module UI =
     open Reflection
@@ -114,7 +48,7 @@ module UI =
     open Microsoft.FSharp.Quotations
     open System.ComponentModel.DataAnnotations
     open Giraffe
-    module M = Class.M
+    module P = Class.P
 
     [<Struct>]
     type InputSettings = {
@@ -154,7 +88,7 @@ module UI =
             | Some displayName -> label [ _for pi.Name; _title friendlyMessage; _style "order:-1;" ] [ rawText displayName ]
             | None -> GiraffeViewEngine.emptyText
 
-        div [ _class (M.Form.inputGroup + M.Form.vertical) ] [
+        div [ _class (P.flex) ] [
             input [
                 yield _type ``type``
                 yield _value <| string value
@@ -169,15 +103,20 @@ module UI =
 
     let inputEmail  expr a = customInput "email" expr a
 
-    let editButton editUrl targetId =
+    let editButton =
+        let editClass = P.pseudo + P.button + Class.Icon.edit
+        fun editUrl targetId ->
         let target =
             targetId
             |> Option.map(fun x -> _icTarget <| "#" + x)
             |> Option.defaultValue _empty
                 
         span [] [
-            a [ _icGetFrom editUrl; target; _class (M.button + Class.backgroundNone); _icIndicator "#edit-spinner" ] [
-                span [ _class M.Icon.edit ] [] ]
-            span [ _id "edit-spinner"; _class M.Animation.spinner; _style "display:none;" ] []
+            a [
+                _icGetFrom editUrl
+                target
+                _icIndicator "#edit-spinner"
+                _class editClass ] []
+            span [ _id "edit-spinner"; _alt "Loading\u2026"; _class "icon-loading"; ] []
         ]
 
