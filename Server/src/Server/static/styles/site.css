@@ -47,11 +47,58 @@ body > header:first-child + * {
     margin-left: auto;
 }
 
-
-.scrollable {
-    max-height: 90vh;
-    overflow-y: auto;
+.flex {
+    margin-left: 0;
+    width: 100%;
 }
 
+/* Modal */
 
+input.modal {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.modal ~ .modal-target {
+    display:block;
+    z-index: 101;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0, 0);
+    transition: all 0.3s ease;
+}
+
+.modal:checked + label {
+    content: '';
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(17,17,17,0.6);
+    z-index: 100;
+    position: fixed;
+    transition: all 0.3s ease;
+}
+
+.modal:checked ~ .modal-target {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1, 1);
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 2em;
+    width: 800px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal:checked ~ .modal-target > * {
+    overflow-y: auto;
+    max-height: 85vh;
+}
 

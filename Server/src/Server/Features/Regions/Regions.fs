@@ -95,12 +95,12 @@ module Model =
     type RegionTeamForm = {
         [<EmailAddress; MaxLength(256)>]
         Email : string option
-        [<MaxLength(128)>]
+        [<Display(Name = "First Name"); MaxLength(128)>]
         FirstName : string option
         IAmTheCoach : bool
-        [<MaxLength(128)>]
+        [<Display(Name = "Last Name"); MaxLength(128)>]
         LastName : string option
-        [<MaxLength(256)>]
+        [<Display(Name = "Team Name"); MaxLength(256)>]
         TeamName : string
     } with
         static member Init =
@@ -188,18 +188,17 @@ module View =
         let regionAttrId = regionAttrId region.Id
         [
         div [ _id regionAttrId ] [ regionRow regionAttrId region ]
-        article [ _class "" ] [
-                yield div [ _class "" ] [
-                    h3 [ _class "" ] [ rawText "Teams" ]
-                    h3 [ _class "" ] [ rawText "Coaches" ] ]
-                yield!  teams
+        article [] [
+                div [ _class P.flex ] [
+                    h3 [] [ rawText "Teams" ]
+                    h3 [] [ rawText "Coaches" ] ]
+                div [ _id "teams"; _class (P.flex + P.Flex.two) ] (
+                        teams
                         |> List.map (fun (team, coaches) ->
-                            div [ _class "" ] [
-                                Teams.View.show team
-                                div [ _class "" ] (coaches |> List.map (fun x -> x ||> Coaches.View.show))
-                            ]
-                        )
-                yield div [ _class P.flex; _id "add-team-button" ] [
+                            [ Teams.View.show team
+                              div [] (coaches |> List.map (fun x -> x ||> Coaches.View.show)) ] )
+                        |> List.concat )
+                div [ _class P.flex; _id "add-team-button" ] [
                     button [ _icGetFrom (Url.Team.add regionId); _icTarget "#add-team-button" ] [ rawText "Add Team" ] ] ]
         ]
 
@@ -232,33 +231,34 @@ module View =
             ]
 
     module Team =
+        open Utils.Class.P.Flex
 
         let add regionID =
             let (RegionID.ID regionId) = regionID
             let team = RegionTeamForm.Init
             let addAnotherCoachId = "add-another-coach"
-            div [ _class ""; ] [
-                label [ _class ""; _for "add-team-modal" ] [ rawText "Add Another Team" ]
-                input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class "modal" ]
-                div [ Accessibility._roleDialog; Accessibility._ariaLabelledBy "add-team-title" ] [
-                    div [ _style "margin:auto;" ] [
-                        form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); _class (Class.scrollable) ] [
-                            h3 [ _id "add-team-title" ] [ rawText "New Team" ]
+            div [] [
+                input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class Class.modal ]
+                label [ _for "add-team-modal" ] [ rawText "Add Another Team" ]
+                div [ _class Class.modalTarget ] [
+                    form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); ] [
+                        fieldset [ _id "add-team-title" ] []
+                        legend [] [ h2 [] [ rawText "New Team" ] ]
+                        div [ _class (P.flex + P.Flex.one + (P.Flex.two_ S800)) ] [
                             div [ _class "" ] [
-                                div [ _class "" ] [
-                                    UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } team <@ fun x -> x.TeamName @>
-                                    div [] [
-                                        input [ _tabindex "30"; _type "checkbox"; _id "i-am-the-coach"; _name "IAmTheCoach" ]
-                                        label [ _for "i-am-the-coach" ] [ rawText "I am the coach" ] ] ]
-                                div [ _id "add-coaches"; _class "" ] [
-                                    div [ _id addAnotherCoachId ] [ Coach.add regionID ]
-                                    button [ _type "button"; _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
-                                        ] ]
+                                UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } team <@ fun x -> x.TeamName @>
+                                label [ _for "i-am-the-coach" ] [
+                                    input [ _tabindex "30"; _type "checkbox"; _id "i-am-the-coach"; _name "IAmTheCoach" ]
+                                    span [ _class P.checkable ] [ rawText "I am the coach" ] ] ]
+                            div [ _id "add-coaches"; _class "" ] [
+                                div [ _id addAnotherCoachId ] [ Coach.add regionID ]
+                                button [ _type "button"; _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
+                                    ] ]
+                        div [ _class "" ] [
                             div [ _class "" ] [
-                                div [ _class "" ] [
-                                    label [ _class ""; _for "add-team-modal"; _tabindex "28" ] [ rawText "Cancel" ]
-                                    button [ _type "reset"; _class ""; _tabindex "29" ] [ rawText "Reset" ]
-                                    button [ _type "submit"; _class (Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ] ]
+                                label [ _class ""; _for "add-team-modal"; _tabindex "28" ] [ rawText "Cancel" ]
+                                button [ _type "reset"; _class ""; _tabindex "29" ] [ rawText "Reset" ]
+                                button [ _type "submit"; _class (Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ]
                 script [ _src "/scripts/region-teams.js" ] [] ]
 
 

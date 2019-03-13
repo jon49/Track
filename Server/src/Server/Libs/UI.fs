@@ -10,7 +10,9 @@ module Class =
     [<Literal>]
     let moveRight = "move-right "
     [<Literal>]
-    let scrollable = "scrollable "
+    let modal = "modal "
+    [<Literal>]
+    let modalTarget = "modal-target "
 
     module Icon =
         [<Literal>]
@@ -38,8 +40,25 @@ module Class =
         let button = "button "
         [<Literal>]
         let menu = "menu "
-        //[<Literal>]
-        //let  = " "
+        [<Literal>]
+        let checkable = "checkable "
+
+        module Flex =
+
+            /// 100px increments starting at 500 up to 2000px
+            [<Struct>]
+            type Width =
+            | S800
+            with
+                override __.ToString() =
+                    match __ with
+                    | S800 -> "800"
+
+            [<Literal>]
+            let one = "one "
+            [<Literal>]
+            let two = "two "
+            let two_ (width : Width) = sprintf "two-%s " (width.ToString())
 
 module UI =
     open Reflection
