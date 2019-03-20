@@ -26,6 +26,7 @@ type UserLayout = {
 
 let layout  =
     let pseudoButtonClass = P.pseudo + P.button
+
     fun user (content: XmlNode list) ->
     let authenticatedNavigation =
         match user with
@@ -42,7 +43,7 @@ let layout  =
             meta [_charset "utf-8"]
             meta [_name "viewport"; _content "width=device-width, initial-scale=1.0" ]
             title [] [ rawText "Track" ]
-            link [ _rel "stylesheet"; _href "//unpkg.com/picnic@6.5.0/picnic.min.css" ] // https://unpkg.com/picnic
+            link [ _rel "stylesheet"; _href "/styles/picnic.css" ]
             link [ _href "/styles/site.css"; _rel "stylesheet" ]
         ]
         body [] [
@@ -52,9 +53,7 @@ let layout  =
                     input [ _id "bmenu"; _type "checkbox"; _class P.show ]
                     label [ _for "bmenu"; _class (P.burger + P.toggle + P.pseudo + P.button) ] [ rawText "menu" ]
                     div [ _class P.menu ] [
-                        authenticatedNavigation
-                    ]
-                     ]
+                        authenticatedNavigation ] ]
                 ]
             main [] content
             

@@ -178,7 +178,7 @@ module View =
     let edit (x : RegionEdit) =
         form [ _method "post"; _icPostTo (Url.show x.Id); _icTarget ((+) "#" <| regionAttrId x.Id); ] [
             UI.inputText InputSettings.Init x.Region <@ fun x -> x.Name @>
-            button [ _type "submit" ] [ rawText "Save" ] ]
+            UI.saveButton ]
 
     let regionRow regionAttrId (x : RegionEdit) =
         h2 [] [ str x.Region.Name; UI.editButton (Url.edit x.Id) (Some regionAttrId) ]
@@ -227,7 +227,7 @@ module View =
             UI.inputText InputSettings.Init coach <@ fun x -> x.FirstName @>
             UI.inputText InputSettings.Init coach <@ fun x -> x.LastName @>
             UI.inputEmail InputSettings.Init coach <@ fun x -> x.Email @>
-            hr []
+            //hr []
             ]
 
     module Team =
@@ -239,23 +239,23 @@ module View =
             let addAnotherCoachId = "add-another-coach"
             div [] [
                 input [ _type "checkbox"; _checked ; _id "add-team-modal"; _class Class.modal ]
-                label [ _for "add-team-modal" ] [ rawText "Add Another Team" ]
+                label [ _for "add-team-modal"; _class P.button ] [ rawText "Add Another Team" ]
                 div [ _class Class.modalTarget ] [
                     form [ _id "new-region-team"; _method "post"; _icPostTo (Url.Team.index regionId); ] [
                         fieldset [ _id "add-team-title" ] []
                         legend [] [ h2 [] [ rawText "New Team" ] ]
                         div [ _class (P.flex + P.Flex.one + (P.Flex.two_ S800)) ] [
-                            div [ _class "" ] [
+                            div [ _class Class.padding ] [
                                 UI.inputText { InputSettings.Init with Attrs = [ _autofocus ] } team <@ fun x -> x.TeamName @>
                                 label [ _for "i-am-the-coach" ] [
                                     input [ _tabindex "30"; _type "checkbox"; _id "i-am-the-coach"; _name "IAmTheCoach" ]
                                     span [ _class P.checkable ] [ rawText "I am the coach" ] ] ]
-                            div [ _id "add-coaches"; _class "" ] [
+                            div [ _id "add-coaches"; _class Class.padding ] [
                                 div [ _id addAnotherCoachId ] [ Coach.add regionID ]
-                                button [ _type "button"; _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
+                                //button [ _type "button"; _id "add-another-coach-button"; _icGetFrom (Url.Coach.add regionId); _icTarget ("#"+addAnotherCoachId); _icSwapStyle Append ] [ rawText "Add Another Coach" ]
                                     ] ]
-                        div [ _class "" ] [
-                            div [ _class "" ] [
+                        div [] [
+                            div [] [
                                 label [ _class ""; _for "add-team-modal"; _tabindex "28" ] [ rawText "Cancel" ]
                                 button [ _type "reset"; _class ""; _tabindex "29" ] [ rawText "Reset" ]
                                 button [ _type "submit"; _class (Class.moveRight) ] [ rawText "Add Team" ] ] ] ] ]

@@ -3,61 +3,41 @@ namespace Utils
 module Class = 
     open Giraffe.GiraffeViewEngine
 
-    [<Literal>]
-    let revealIfActive = "reveal-if-active "
-    //[<Literal>]
-    //let backgroundNone = "bg-none "
-    [<Literal>]
-    let moveRight = "move-right "
-    [<Literal>]
-    let modal = "modal "
-    [<Literal>]
-    let modalTarget = "modal-target "
+    let [<Literal>] revealIfActive = "reveal-if-active "
+    let [<Literal>] moveRight = "move-right "
+    let [<Literal>] modal = "modal "
+    let [<Literal>] modalTarget = "modal-target "
+    let [<Literal>] padding = "padding "
 
     module Icon =
-        [<Literal>]
-        let checkCircle = "icon-check-circle "
-        [<Literal>]
-        let slash = "icon-slash "
-        [<Literal>]
-        let edit = "icon-edit "
+        let [<Literal>] checkCircle = "icon-check-circle "
+        let [<Literal>] slash = "icon-slash "
+        let [<Literal>] edit = "icon-edit "
 
     /// Picnic CSS
     module P =
-        [<Literal>]
-        let flex = "flex "
-        [<Literal>]
-        let brand = "brand "
-        [<Literal>]
-        let show = "show "
-        [<Literal>]
-        let burger = "burger "
-        [<Literal>]
-        let toggle = "toggle "
-        [<Literal>]
-        let pseudo = "pseudo "
-        [<Literal>]
-        let button = "button "
-        [<Literal>]
-        let menu = "menu "
-        [<Literal>]
-        let checkable = "checkable "
+        let [<Literal>] flex = "flex "
+        let [<Literal>] brand = "brand "
+        let [<Literal>] show = "show "
+        let [<Literal>] burger = "burger "
+        let [<Literal>] toggle = "toggle "
+        let [<Literal>] pseudo = "pseudo "
+        let [<Literal>] button = "button "
+        let [<Literal>] menu = "menu "
+        let [<Literal>] checkable = "checkable "
 
         module Flex =
 
             /// 100px increments starting at 500 up to 2000px
-            [<Struct>]
-            type Width =
+            type [<Struct>] Width =
             | S800
             with
                 override __.ToString() =
                     match __ with
                     | S800 -> "800"
 
-            [<Literal>]
-            let one = "one "
-            [<Literal>]
-            let two = "two "
+            let [<Literal>] one = "one "
+            let [<Literal>] two = "two "
             let two_ (width : Width) = sprintf "two-%s " (width.ToString())
 
 module UI =
@@ -138,4 +118,9 @@ module UI =
                 _class editClass ] []
             span [ _id "edit-spinner"; _alt "Loading\u2026"; _class "icon-loading"; ] []
         ]
+
+    let saveButton =
+        button [ _type "submit"; ] [
+            rawText "Save"
+            span [ _alt "Loading\u2026"; _class "ic-indicator icon-loading" ] [] ]
 
