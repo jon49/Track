@@ -57,8 +57,6 @@ let layout  =
                 ]
             main [] content
             
-            script [ _src "https://code.jquery.com/jquery-3.1.1.min.js" ] []
-            script [ _src "https://intercoolerreleases-leaddynocom.netdna-ssl.com/intercooler-1.2.1.min.js" ] []
             script [ _src "/scripts/app.js" ] []
         ]
     ]
