@@ -29,6 +29,8 @@ Command and control from the back end as much as possible
 
 - Be able to toggle form edit/presentation without interaction from back end
     + Make sure submit button is disabled
+    + data-toggle-class="presentation,#submit"
+    + data-toggle-attribute="disabled,#submit"
 - Be able to command from back end
     + Headers:
         * X-Target: '#MyTarget' -- could be element and it matches all elements

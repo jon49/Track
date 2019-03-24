@@ -34,6 +34,7 @@
     <Compile Include="Features\Shared\Shared.fs" />
     <Compile Include="Features\Shared\Register.fs" />
     <Compile Include="Features\Shared\Pipelines.fs" />
+    <Compile Include="Features\Tests\Tests.fs" />
     <Compile Include="Features\Accounts\AccountsController.fs" />
     <Compile Include="Features\Pages\Welcome.fs" />
     <Compile Include="Features\Pages\Index.fs" />
